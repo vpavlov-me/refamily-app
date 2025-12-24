@@ -1,0 +1,177 @@
+{
+  "decisions": [
+    {
+      "id": "dec_001",
+      "title": "Q4 2025 Investment Allocation",
+      "description": "Proposal to adjust the family portfolio allocation for Q4 2025 in response to market conditions and upcoming opportunities in sustainable energy sector.",
+      "status": "Voting",
+      "type": "Financial",
+      "priority": "High",
+      "createdAt": "2025-12-10T09:00:00Z",
+      "createdBy": "Michael Reluna",
+      "deadline": "2025-12-31T23:59:59Z",
+      "proposals": [
+        {
+          "id": "prop_001a",
+          "title": "Conservative Approach",
+          "description": "Maintain current allocation with 5% increase to fixed income",
+          "votes": 1,
+          "voters": ["Elena Reluna"]
+        },
+        {
+          "id": "prop_001b",
+          "title": "Balanced Growth",
+          "description": "Shift 10% from fixed income to sustainable energy ETFs",
+          "votes": 2,
+          "voters": ["Alexander Reluna", "Victoria Reluna"]
+        },
+        {
+          "id": "prop_001c",
+          "title": "Aggressive Growth",
+          "description": "Increase private equity allocation by 15%",
+          "votes": 0,
+          "voters": []
+        }
+      ],
+      "myVote": null,
+      "requiredVotes": 4,
+      "totalVotes": 3,
+      "comments": [
+        {
+          "id": "com_001",
+          "author": "Michael Reluna",
+          "content": "Given current market volatility, I recommend the Balanced Growth option.",
+          "createdAt": "2025-12-12T14:30:00Z"
+        }
+      ]
+    },
+    {
+      "id": "dec_002",
+      "title": "New Philanthropy Initiative",
+      "description": "Approval of $500,000 grant to establish the Reluna Family Education Scholarship Fund for first-generation college students.",
+      "status": "Voting",
+      "type": "Philanthropy",
+      "priority": "Medium",
+      "createdAt": "2025-12-05T11:00:00Z",
+      "createdBy": "Victoria Reluna",
+      "deadline": "2025-12-28T23:59:59Z",
+      "proposals": [
+        {
+          "id": "prop_002a",
+          "title": "Full Approval",
+          "description": "Approve the full $500,000 grant immediately",
+          "votes": 3,
+          "voters": ["Victoria Reluna", "Elena Reluna", "Sophia Reluna"]
+        },
+        {
+          "id": "prop_002b",
+          "title": "Phased Approach",
+          "description": "Approve $250,000 now with remaining funds contingent on program success metrics",
+          "votes": 1,
+          "voters": ["Michael Reluna"]
+        }
+      ],
+      "myVote": null,
+      "requiredVotes": 4,
+      "totalVotes": 4,
+      "comments": []
+    },
+    {
+      "id": "dec_003",
+      "title": "Constitution Amendment: Remote Voting",
+      "description": "Proposal to amend the constitution to allow secure remote voting for Family Council decisions when in-person attendance is not possible.",
+      "status": "Pending",
+      "type": "Governance",
+      "priority": "High",
+      "createdAt": "2025-12-01T08:00:00Z",
+      "createdBy": "Sophia Reluna",
+      "deadline": "2026-01-15T23:59:59Z",
+      "proposals": [
+        {
+          "id": "prop_003a",
+          "title": "Allow Remote Voting",
+          "description": "Permit verified remote voting through secure platform",
+          "votes": 0,
+          "voters": []
+        },
+        {
+          "id": "prop_003b",
+          "title": "In-Person Only",
+          "description": "Maintain requirement for in-person voting",
+          "votes": 0,
+          "voters": []
+        }
+      ],
+      "myVote": null,
+      "requiredVotes": 5,
+      "totalVotes": 0,
+      "comments": []
+    },
+    {
+      "id": "dec_004",
+      "title": "Annual Family Retreat Location",
+      "description": "Selection of destination for the 2026 Annual Family Retreat (July 15-22).",
+      "status": "Approved",
+      "type": "Operational",
+      "priority": "Low",
+      "createdAt": "2025-11-15T10:00:00Z",
+      "createdBy": "Elena Reluna",
+      "deadline": "2025-12-01T23:59:59Z",
+      "closedAt": "2025-12-01T18:00:00Z",
+      "result": "Lake Como, Italy",
+      "proposals": [
+        {
+          "id": "prop_004a",
+          "title": "Lake Como, Italy",
+          "description": "Villa rental on Lake Como with cultural excursions",
+          "votes": 4,
+          "voters": ["Alexander Reluna", "Victoria Reluna", "Elena Reluna", "Sophia Reluna"]
+        },
+        {
+          "id": "prop_004b",
+          "title": "Aspen, Colorado",
+          "description": "Mountain lodge with outdoor activities",
+          "votes": 1,
+          "voters": ["Michael Reluna"]
+        }
+      ],
+      "myVote": "prop_004a",
+      "requiredVotes": 3,
+      "totalVotes": 5,
+      "comments": []
+    },
+    {
+      "id": "dec_005",
+      "title": "Next-Gen Internship Program",
+      "description": "Establishment of mandatory internship program for family members ages 18-25 within family enterprises.",
+      "status": "Approved",
+      "type": "Education",
+      "priority": "Medium",
+      "createdAt": "2025-10-01T09:00:00Z",
+      "createdBy": "Alexander Reluna",
+      "deadline": "2025-11-01T23:59:59Z",
+      "closedAt": "2025-10-28T12:00:00Z",
+      "result": "Program approved with mentor pairing",
+      "proposals": [
+        {
+          "id": "prop_005a",
+          "title": "Mandatory with Mentorship",
+          "description": "Required 3-month internship with dedicated senior mentor",
+          "votes": 5,
+          "voters": ["Alexander Reluna", "Victoria Reluna", "Michael Reluna", "Elena Reluna", "Sophia Reluna"]
+        }
+      ],
+      "myVote": "prop_005a",
+      "requiredVotes": 3,
+      "totalVotes": 5,
+      "comments": []
+    }
+  ],
+  "summary": {
+    "total": 5,
+    "voting": 2,
+    "pending": 1,
+    "approved": 2,
+    "rejected": 0
+  }
+}

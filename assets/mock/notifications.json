@@ -1,0 +1,119 @@
+{
+  "notifications": [
+    {
+      "id": "notif_001",
+      "type": "decision",
+      "title": "Vote Required: Q4 Investment Allocation",
+      "message": "Your vote is needed on the Q4 2025 Investment Allocation decision. Deadline: Dec 31, 2025.",
+      "isRead": false,
+      "priority": "high",
+      "actionUrl": "/decisions/dec_001",
+      "createdAt": "2025-12-20T09:00:00Z",
+      "relatedId": "dec_001"
+    },
+    {
+      "id": "notif_002",
+      "type": "meeting",
+      "title": "Upcoming: Q4 Family Council Meeting",
+      "message": "Reminder: Q4 Family Council Meeting is scheduled for December 28, 2025 at 2:00 PM.",
+      "isRead": false,
+      "priority": "high",
+      "actionUrl": "/meetings/meet_001",
+      "createdAt": "2025-12-20T08:00:00Z",
+      "relatedId": "meet_001"
+    },
+    {
+      "id": "notif_003",
+      "type": "constitution",
+      "title": "Constitution Updated",
+      "message": "Victoria Reluna has updated the Governance Structure section of the Family Constitution.",
+      "isRead": false,
+      "priority": "medium",
+      "actionUrl": "/constitution",
+      "createdAt": "2025-12-15T10:35:00Z",
+      "relatedId": "const_001"
+    },
+    {
+      "id": "notif_004",
+      "type": "decision",
+      "title": "Vote Required: Philanthropy Initiative",
+      "message": "Please cast your vote on the New Philanthropy Initiative proposal.",
+      "isRead": true,
+      "priority": "medium",
+      "actionUrl": "/decisions/dec_002",
+      "createdAt": "2025-12-15T09:00:00Z",
+      "relatedId": "dec_002"
+    },
+    {
+      "id": "notif_005",
+      "type": "member",
+      "title": "New Document Shared",
+      "message": "Michael Reluna shared 'Q3 Financial Summary.pdf' with the family.",
+      "isRead": true,
+      "priority": "low",
+      "actionUrl": "/documents",
+      "createdAt": "2025-12-14T16:00:00Z",
+      "relatedId": null
+    },
+    {
+      "id": "notif_006",
+      "type": "meeting",
+      "title": "Meeting Invitation: Investment Committee",
+      "message": "You've been invited to the Investment Committee Review on December 30, 2025.",
+      "isRead": true,
+      "priority": "medium",
+      "actionUrl": "/meetings/meet_002",
+      "createdAt": "2025-12-10T09:30:00Z",
+      "relatedId": "meet_002"
+    },
+    {
+      "id": "notif_007",
+      "type": "decision",
+      "title": "Decision Approved: Family Retreat",
+      "message": "The Annual Family Retreat Location decision has been approved. Lake Como, Italy selected!",
+      "isRead": true,
+      "priority": "low",
+      "actionUrl": "/decisions/dec_004",
+      "createdAt": "2025-12-01T18:05:00Z",
+      "relatedId": "dec_004"
+    },
+    {
+      "id": "notif_008",
+      "type": "system",
+      "title": "Profile Reminder",
+      "message": "Please review and update your family profile information for 2025 records.",
+      "isRead": true,
+      "priority": "low",
+      "actionUrl": "/profile",
+      "createdAt": "2025-11-30T10:00:00Z",
+      "relatedId": null
+    },
+    {
+      "id": "notif_009",
+      "type": "decision",
+      "title": "Decision Approved: Internship Program",
+      "message": "The Next-Gen Internship Program has been unanimously approved.",
+      "isRead": true,
+      "priority": "low",
+      "actionUrl": "/decisions/dec_005",
+      "createdAt": "2025-10-28T12:05:00Z",
+      "relatedId": "dec_005"
+    },
+    {
+      "id": "notif_010",
+      "type": "welcome",
+      "title": "Welcome to Reluna Family",
+      "message": "Welcome to the Reluna Family Governance platform. Explore your dashboard to get started.",
+      "isRead": true,
+      "priority": "low",
+      "actionUrl": "/dashboard",
+      "createdAt": "2025-10-01T08:00:00Z",
+      "relatedId": null
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "unread": 3,
+    "highPriority": 2
+  }
+}

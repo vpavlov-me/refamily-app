@@ -1,0 +1,114 @@
+{
+  "activities": [
+    {
+      "id": "act_001",
+      "type": "vote",
+      "title": "Victoria Reluna voted on Q4 Investment",
+      "description": "Voted for 'Balanced Growth' approach",
+      "actor": "Victoria Reluna",
+      "actorAvatar": "https://i.pravatar.cc/150?u=victoria",
+      "timestamp": "2025-12-20T14:30:00Z",
+      "relatedId": "dec_001",
+      "relatedType": "decision"
+    },
+    {
+      "id": "act_002",
+      "type": "vote",
+      "title": "Alexander Reluna voted on Q4 Investment",
+      "description": "Voted for 'Balanced Growth' approach",
+      "actor": "Alexander Reluna",
+      "actorAvatar": "https://i.pravatar.cc/150?u=alexander",
+      "timestamp": "2025-12-20T11:15:00Z",
+      "relatedId": "dec_001",
+      "relatedType": "decision"
+    },
+    {
+      "id": "act_003",
+      "type": "constitution",
+      "title": "Constitution Updated",
+      "description": "Governance Structure section modified",
+      "actor": "Victoria Reluna",
+      "actorAvatar": "https://i.pravatar.cc/150?u=victoria",
+      "timestamp": "2025-12-15T10:30:00Z",
+      "relatedId": "const_001",
+      "relatedType": "constitution"
+    },
+    {
+      "id": "act_004",
+      "type": "meeting",
+      "title": "Meeting Scheduled",
+      "description": "Q4 Family Council Meeting scheduled for Dec 28",
+      "actor": "Victoria Reluna",
+      "actorAvatar": "https://i.pravatar.cc/150?u=victoria",
+      "timestamp": "2025-12-14T09:00:00Z",
+      "relatedId": "meet_001",
+      "relatedType": "meeting"
+    },
+    {
+      "id": "act_005",
+      "type": "comment",
+      "title": "Michael Reluna commented",
+      "description": "Added recommendation on Investment decision",
+      "actor": "Michael Reluna",
+      "actorAvatar": "https://i.pravatar.cc/150?u=michael",
+      "timestamp": "2025-12-12T14:30:00Z",
+      "relatedId": "dec_001",
+      "relatedType": "decision"
+    },
+    {
+      "id": "act_006",
+      "type": "decision",
+      "title": "New Decision Created",
+      "description": "Q4 2025 Investment Allocation proposal",
+      "actor": "Michael Reluna",
+      "actorAvatar": "https://i.pravatar.cc/150?u=michael",
+      "timestamp": "2025-12-10T09:00:00Z",
+      "relatedId": "dec_001",
+      "relatedType": "decision"
+    },
+    {
+      "id": "act_007",
+      "type": "vote",
+      "title": "Sophia Reluna voted on Philanthropy",
+      "description": "Voted for 'Full Approval' option",
+      "actor": "Sophia Reluna",
+      "actorAvatar": "https://i.pravatar.cc/150?u=sophia",
+      "timestamp": "2025-12-08T16:45:00Z",
+      "relatedId": "dec_002",
+      "relatedType": "decision"
+    },
+    {
+      "id": "act_008",
+      "type": "decision",
+      "title": "New Decision Created",
+      "description": "Philanthropy Initiative proposal submitted",
+      "actor": "Victoria Reluna",
+      "actorAvatar": "https://i.pravatar.cc/150?u=victoria",
+      "timestamp": "2025-12-05T11:00:00Z",
+      "relatedId": "dec_002",
+      "relatedType": "decision"
+    },
+    {
+      "id": "act_009",
+      "type": "decision",
+      "title": "Decision Approved",
+      "description": "Lake Como selected for 2026 Family Retreat",
+      "actor": "System",
+      "actorAvatar": null,
+      "timestamp": "2025-12-01T18:00:00Z",
+      "relatedId": "dec_004",
+      "relatedType": "decision"
+    },
+    {
+      "id": "act_010",
+      "type": "member",
+      "title": "Profile Updated",
+      "description": "Elena Reluna updated her expertise areas",
+      "actor": "Elena Reluna",
+      "actorAvatar": "https://i.pravatar.cc/150?u=elena",
+      "timestamp": "2025-11-28T15:20:00Z",
+      "relatedId": "member_004",
+      "relatedType": "member"
+    }
+  ]
+}

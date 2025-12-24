@@ -1,0 +1,98 @@
+{
+  "meetings": [
+    {
+      "id": "meet_001",
+      "title": "Q4 Family Council Meeting",
+      "type": "Family Council",
+      "date": "2025-12-28T14:00:00Z",
+      "endTime": "2025-12-28T17:00:00Z",
+      "location": "Main Family Estate - Conference Room A",
+      "isVirtual": false,
+      "virtualLink": null,
+      "status": "Scheduled",
+      "organizer": "Victoria Reluna",
+      "attendees": [
+        {"id": "member_001", "name": "Alexander Reluna", "role": "Founder", "status": "Confirmed"},
+        {"id": "member_002", "name": "Victoria Reluna", "role": "Chair", "status": "Confirmed"},
+        {"id": "member_003", "name": "Michael Reluna", "role": "CFO", "status": "Confirmed"},
+        {"id": "member_004", "name": "Elena Reluna", "role": "Advisor", "status": "Tentative"},
+        {"id": "member_005", "name": "Sophia Reluna", "role": "Next-Gen", "status": "Pending"}
+      ],
+      "agenda": [
+        {"id": "ag_001", "order": 1, "title": "Opening & Roll Call", "duration": 10, "presenter": "Victoria Reluna"},
+        {"id": "ag_002", "order": 2, "title": "Review Q3 Financial Report", "duration": 30, "presenter": "Michael Reluna"},
+        {"id": "ag_003", "order": 3, "title": "Constitution Amendment Discussion", "duration": 45, "presenter": "Sophia Reluna"},
+        {"id": "ag_004", "order": 4, "title": "Q4 Investment Allocation Vote", "duration": 30, "presenter": "Michael Reluna"},
+        {"id": "ag_005", "order": 5, "title": "Philanthropy Initiative Vote", "duration": 20, "presenter": "Victoria Reluna"},
+        {"id": "ag_006", "order": 6, "title": "Open Discussion & Next Steps", "duration": 25, "presenter": "Alexander Reluna"}
+      ],
+      "documents": [
+        {"id": "doc_001", "title": "Q3 Financial Summary.pdf", "type": "PDF"},
+        {"id": "doc_002", "title": "Investment Proposal Details.xlsx", "type": "Excel"},
+        {"id": "doc_003", "title": "Constitution Amendment Draft.docx", "type": "Word"}
+      ],
+      "notes": "Please review all documents before the meeting. Lunch will be provided.",
+      "createdAt": "2025-12-01T10:00:00Z"
+    },
+    {
+      "id": "meet_002",
+      "title": "Investment Committee Review",
+      "type": "Committee",
+      "date": "2025-12-30T10:00:00Z",
+      "endTime": "2025-12-30T11:30:00Z",
+      "location": "Virtual",
+      "isVirtual": true,
+      "virtualLink": "https://zoom.us/j/123456789",
+      "status": "Scheduled",
+      "organizer": "Michael Reluna",
+      "attendees": [
+        {"id": "member_001", "name": "Alexander Reluna", "role": "Founder", "status": "Confirmed"},
+        {"id": "member_003", "name": "Michael Reluna", "role": "CFO", "status": "Confirmed"}
+      ],
+      "agenda": [
+        {"id": "ag_007", "order": 1, "title": "Market Analysis Update", "duration": 20, "presenter": "Michael Reluna"},
+        {"id": "ag_008", "order": 2, "title": "Portfolio Performance Review", "duration": 30, "presenter": "Michael Reluna"},
+        {"id": "ag_009", "order": 3, "title": "2026 Investment Strategy Planning", "duration": 30, "presenter": "Alexander Reluna"}
+      ],
+      "documents": [
+        {"id": "doc_004", "title": "Portfolio Performance Dec 2025.pdf", "type": "PDF"}
+      ],
+      "notes": "Focus on sustainable investment opportunities for 2026.",
+      "createdAt": "2025-12-10T09:00:00Z"
+    },
+    {
+      "id": "meet_003",
+      "title": "Next-Gen Leadership Workshop",
+      "type": "Workshop",
+      "date": "2026-01-05T09:00:00Z",
+      "endTime": "2026-01-05T16:00:00Z",
+      "location": "Family Foundation Center",
+      "isVirtual": false,
+      "virtualLink": null,
+      "status": "Scheduled",
+      "organizer": "Elena Reluna",
+      "attendees": [
+        {"id": "member_004", "name": "Elena Reluna", "role": "Advisor", "status": "Confirmed"},
+        {"id": "member_005", "name": "Sophia Reluna", "role": "Next-Gen", "status": "Confirmed"}
+      ],
+      "agenda": [
+        {"id": "ag_010", "order": 1, "title": "Family Legacy & Values", "duration": 60, "presenter": "Elena Reluna"},
+        {"id": "ag_011", "order": 2, "title": "Financial Literacy Fundamentals", "duration": 90, "presenter": "External Facilitator"},
+        {"id": "ag_012", "order": 3, "title": "Leadership Skills Assessment", "duration": 60, "presenter": "Elena Reluna"},
+        {"id": "ag_013", "order": 4, "title": "Personal Development Planning", "duration": 60, "presenter": "Elena Reluna"}
+      ],
+      "documents": [
+        {"id": "doc_005", "title": "Leadership Development Framework.pdf", "type": "PDF"},
+        {"id": "doc_006", "title": "Family History & Values Guide.pdf", "type": "PDF"}
+      ],
+      "notes": "Full-day workshop. Breakfast and lunch provided. Casual attire appropriate.",
+      "createdAt": "2025-12-15T14:00:00Z"
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "upcoming": 3,
+    "thisWeek": 2,
+    "virtual": 1
+  }
+}

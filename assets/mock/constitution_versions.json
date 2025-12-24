@@ -1,0 +1,49 @@
+{
+  "versions": [
+    {
+      "id": "ver_001",
+      "version": "2.5",
+      "status": "Current",
+      "createdAt": "2025-12-15T10:30:00Z",
+      "createdBy": "Victoria Reluna",
+      "summary": "Updated Governance Structure with new voting thresholds",
+      "changes": ["Modified supermajority requirement from 66% to 75%", "Added Annual Family Assembly requirement"]
+    },
+    {
+      "id": "ver_002",
+      "version": "2.4",
+      "status": "Archived",
+      "createdAt": "2025-10-01T14:00:00Z",
+      "createdBy": "Alexander Reluna",
+      "summary": "Financial Policy updates for Q4 2025",
+      "changes": ["Revised investment allocation percentages", "Added alternative investments category"]
+    },
+    {
+      "id": "ver_003",
+      "version": "2.3",
+      "status": "Archived",
+      "createdAt": "2025-07-15T09:00:00Z",
+      "createdBy": "Michael Reluna",
+      "summary": "Succession Planning enhancements",
+      "changes": ["Added Next-Gen development requirements", "Introduced term limits for all positions"]
+    },
+    {
+      "id": "ver_004",
+      "version": "2.2",
+      "status": "Archived",
+      "createdAt": "2025-03-20T11:30:00Z",
+      "createdBy": "Elena Reluna",
+      "summary": "Core Values revision",
+      "changes": ["Added Philanthropy as fifth core value", "Expanded definitions of each value"]
+    },
+    {
+      "id": "ver_005",
+      "version": "2.1",
+      "status": "Archived",
+      "createdAt": "2024-12-01T10:00:00Z",
+      "createdBy": "Alexander Reluna",
+      "summary": "Initial comprehensive constitution",
+      "changes": ["Complete restructuring of document", "Added all five major sections"]
+    }
+  ]
+}

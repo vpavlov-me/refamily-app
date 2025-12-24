@@ -1,0 +1,45 @@
+{
+  "id": "const_001",
+  "version": "2.5",
+  "title": "Reluna Family Constitution",
+  "lastEditedAt": "2025-12-15T10:30:00Z",
+  "lastEditedBy": "Victoria Reluna",
+  "status": "Active",
+  "sections": [
+    {
+      "id": "section_001",
+      "order": 1,
+      "title": "Mission & Vision",
+      "content": "The Reluna Family is committed to building and preserving generational wealth while maintaining strong family bonds across generations. Our mission is to create a legacy that empowers future generations through education, entrepreneurship, and shared values.\n\nVision Statement: To be a beacon of family unity, financial stewardship, and positive community impact for the next 100 years and beyond.",
+      "lastEditedAt": "2025-12-10T14:20:00Z"
+    },
+    {
+      "id": "section_002",
+      "order": 2,
+      "title": "Core Values",
+      "content": "1. **Integrity** - We conduct all family and business affairs with honesty and transparency.\n\n2. **Unity** - We prioritize family harmony and collective decision-making over individual interests.\n\n3. **Stewardship** - We are responsible custodians of family wealth and legacy for future generations.\n\n4. **Education** - We invest continuously in the personal and professional development of all family members.\n\n5. **Philanthropy** - We commit to giving back to our communities and supporting causes aligned with our values.",
+      "lastEditedAt": "2025-11-28T09:15:00Z"
+    },
+    {
+      "id": "section_003",
+      "order": 3,
+      "title": "Governance Structure",
+      "content": "**Family Council**\nThe supreme governing body consisting of all adult family members (18+). Meets quarterly to address major decisions.\n\n**Executive Committee**\n- Founder/Patriarch: Alexander Reluna\n- Chair: Victoria Reluna\n- CFO: Michael Reluna\n- Advisor: Elena Reluna\n\n**Voting Rights**\n- Major decisions require 75% supermajority\n- Operational decisions require simple majority\n- Each adult member has one vote\n\n**Meeting Protocols**\n- Quarterly Family Council meetings (mandatory)\n- Monthly Executive Committee meetings\n- Annual Family Assembly (all generations)",
+      "lastEditedAt": "2025-12-15T10:30:00Z"
+    },
+    {
+      "id": "section_004",
+      "order": 4,
+      "title": "Financial Policies",
+      "content": "**Investment Philosophy**\nConservative growth with diversification across asset classes:\n- 40% Public Equities\n- 25% Real Estate\n- 20% Private Equity\n- 10% Fixed Income\n- 5% Alternative Investments\n\n**Distribution Policy**\n- Annual distributions not to exceed 4% of portfolio value\n- Emergency withdrawals require Executive Committee approval\n- Education funding: Full support for accredited programs\n\n**Reporting Requirements**\n- Quarterly financial reports to all members\n- Annual audit by independent firm\n- Real-time dashboard access for all members",
+      "lastEditedAt": "2025-12-01T16:45:00Z"
+    },
+    {
+      "id": "section_005",
+      "order": 5,
+      "title": "Succession Planning",
+      "content": "**Leadership Succession**\nAll leadership positions are subject to term limits and democratic election:\n- Chair: 5-year term, maximum 2 consecutive terms\n- Committee roles: 3-year terms, renewable\n\n**Next Generation Development**\n- Mandatory financial literacy program (ages 16-21)\n- Internship requirement in family enterprises\n- Mentorship pairing with senior family members\n\n**Wealth Transfer**\n- Structured inheritance aligned with family values\n- Performance-based incentives for Next-Gen members\n- Trust structures for long-term preservation\n\n**Amendment Process**\nConstitutional amendments require:\n1. Written proposal submitted 30 days before vote\n2. Discussion at Family Council meeting\n3. 80% supermajority approval\n4. 90-day implementation period",
+      "lastEditedAt": "2025-11-15T11:00:00Z"
+    }
+  ]
+}
