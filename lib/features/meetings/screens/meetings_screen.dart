@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
+import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../core/providers/providers.dart';
 import '../../../data/models/models.dart';
 import 'create_meeting_screen.dart';
@@ -29,23 +31,23 @@ class _MeetingsScreenState extends ConsumerState<MeetingsScreen> {
   Widget build(BuildContext context) {
     final meetings = ref.watch(meetingsProvider);
     final meetingsSummary = ref.watch(meetingsSummaryProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Meetings',
       hasBackButton: true,
       actions: [
-        AdaptiveIconButton(
+        IconButton(
           icon: _showCalendar
-              ? (isIOS ? CupertinoIcons.list_bullet : Icons.list)
-              : (isIOS ? CupertinoIcons.calendar : Icons.calendar_month),
+              ? const Icon(Icons.list)
+              : const Icon(Icons.calendar_month),
           onPressed: () => setState(() => _showCalendar = !_showCalendar),
         ),
-        AdaptiveIconButton(
-          icon: isIOS ? CupertinoIcons.add : Icons.add,
+        IconButton(
+          icon: const Icon(Icons.add),
           onPressed: () {
             Navigator.of(context).push(
-              isIOS
+              Platform.isIOS
                   ? CupertinoPageRoute(
                       builder: (context) => const CreateMeetingScreen(),
                     )
@@ -196,7 +198,7 @@ class _MeetingsScreenState extends ConsumerState<MeetingsScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              isIOS ? CupertinoIcons.calendar : Icons.event_available,
+                              Icons.event_available,
                               size: 64,
                               color: RelunaTheme.textTertiary,
                             ),
@@ -229,7 +231,7 @@ class _MeetingsScreenState extends ConsumerState<MeetingsScreen> {
             ],
           );
         },
-        loading: () => const Center(child: AdaptiveLoadingIndicator()),
+        loading: () => const Center(child: AppLoadingIndicator()),
         error: (_, __) => const Center(child: Text('Failed to load meetings')),
       ),
     );

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../core/providers/providers.dart';
 import '../../../data/models/models.dart';
 
@@ -28,20 +28,19 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final decisionAsync = ref.watch(decisionByIdProvider(widget.decisionId));
-    final authState = ref.watch(authStateProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    final theme = ShadTheme.of(context);
 
     return decisionAsync.when(
       data: (decision) {
         if (decision == null) {
-          return AdaptiveScaffold(
+          return AppScaffold(
             title: 'Decision',
             hasBackButton: true,
             body: const Center(child: Text('Decision not found')),
           );
         }
 
-        return AdaptiveScaffold(
+        return AppScaffold(
           title: 'Decision',
           hasBackButton: true,
           body: SingleChildScrollView(
@@ -58,7 +57,7 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
                       end: Alignment.bottomRight,
                       colors: [
                         _getStatusColor(decision.status).withValues(alpha: 0.1),
-                        RelunaTheme.background,
+                        theme.colorScheme.background,
                       ],
                     ),
                   ),
@@ -98,12 +97,9 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                const Text(
+                                Text(
                                   'Deadline',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: RelunaTheme.textTertiary,
-                                  ),
+                                  style: theme.textTheme.small,
                                 ),
                                 Text(
                                   DateFormat('MMM d, y').format(decision.deadline!),
@@ -112,7 +108,7 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
                                     fontWeight: FontWeight.w600,
                                     color: decision.deadline!.isBefore(DateTime.now())
                                         ? RelunaTheme.error
-                                        : RelunaTheme.textPrimary,
+                                        : theme.colorScheme.foreground,
                                   ),
                                 ),
                               ],
@@ -122,27 +118,20 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
                       const SizedBox(height: 16),
                       Text(
                         decision.title,
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: RelunaTheme.textPrimary,
-                        ),
+                        style: theme.textTheme.h3,
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.person_outline,
                             size: 16,
-                            color: RelunaTheme.textTertiary,
+                            color: theme.colorScheme.mutedForeground,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             'Proposed by ${decision.createdBy}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: RelunaTheme.textSecondary,
-                            ),
+                            style: theme.textTheme.muted,
                           ),
                         ],
                       ),
@@ -156,21 +145,14 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Description
-                      const Text(
-                        'Description',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: RelunaTheme.textPrimary,
-                        ),
-                      ),
+                      Text('Description', style: theme.textTheme.h4),
                       const SizedBox(height: 12),
-                      AdaptiveCard(
+                      AppCard(
                         child: Text(
                           decision.description,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
-                            color: RelunaTheme.textPrimary,
+                            color: theme.colorScheme.foreground,
                             height: 1.6,
                           ),
                         ),
@@ -179,14 +161,7 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
                       // Voting results
                       if (decision.status == 'Voting' || decision.status == 'Approved' || decision.status == 'Rejected') ...[
                         const SizedBox(height: 24),
-                        const Text(
-                          'Voting Results',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: RelunaTheme.textPrimary,
-                          ),
-                        ),
+                        Text('Voting Results', style: theme.textTheme.h4),
                         const SizedBox(height: 12),
                         _VotingResults(decision: decision),
                       ],
@@ -194,14 +169,7 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
                       // Cast vote section (only for voting decisions)
                       if (decision.status == 'Voting') ...[
                         const SizedBox(height: 24),
-                        const Text(
-                          'Cast Your Vote',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: RelunaTheme.textPrimary,
-                          ),
-                        ),
+                        Text('Cast Your Vote', style: theme.textTheme.h4),
                         const SizedBox(height: 12),
                         _VoteSection(
                           selectedVote: _selectedVote,
@@ -215,14 +183,7 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
                       // Proposals
                       if (decision.proposals.isNotEmpty) ...[
                         const SizedBox(height: 24),
-                        const Text(
-                          'Proposals',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: RelunaTheme.textPrimary,
-                          ),
-                        ),
+                        Text('Proposals', style: theme.textTheme.h4),
                         const SizedBox(height: 12),
                         ...decision.proposals.map((proposal) => _ProposalCard(proposal: proposal)),
                       ],
@@ -230,14 +191,7 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
                       // Comments
                       if (decision.comments.isNotEmpty) ...[
                         const SizedBox(height: 24),
-                        Text(
-                          'Discussion (${decision.comments.length})',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: RelunaTheme.textPrimary,
-                          ),
-                        ),
+                        Text('Discussion (${decision.comments.length})', style: theme.textTheme.h4),
                         const SizedBox(height: 12),
                         ...decision.comments.map((comment) => _CommentCard(comment: comment)),
                       ],
@@ -249,15 +203,15 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
           ),
         );
       },
-      loading: () => const AdaptiveScaffold(
+      loading: () => const AppScaffold(
         title: 'Loading...',
         hasBackButton: true,
-        body: Center(child: AdaptiveLoadingIndicator()),
+        body: Center(child: AppLoadingIndicator()),
       ),
-      error: (_, __) => AdaptiveScaffold(
+      error: (_, __) => const AppScaffold(
         title: 'Error',
         hasBackButton: true,
-        body: const Center(child: Text('Failed to load decision')),
+        body: Center(child: Text('Failed to load decision')),
       ),
     );
   }
@@ -293,21 +247,30 @@ class _DecisionDetailScreenState extends ConsumerState<DecisionDetailScreen> {
   }
 
   void _submitVote(Decision decision) {
-    AdaptiveDialog.show(
+    showShadDialog(
       context: context,
-      title: 'Confirm Vote',
-      content: 'You are voting "$_selectedVote" on "${decision.title}". This action cannot be undone.',
-      confirmText: 'Submit Vote',
-      cancelText: 'Cancel',
-      isDestructive: false,
-      onConfirm: () {
-        AdaptiveDialog.show(
-          context: context,
-          title: 'Vote Submitted',
-          content: 'Your vote has been recorded successfully.',
-          confirmText: 'OK',
-        );
-      },
+      builder: (context) => ShadDialog.alert(
+        title: const Text('Confirm Vote'),
+        description: Text('You are voting "$_selectedVote" on "${decision.title}". This action cannot be undone.'),
+        actions: [
+          ShadButton.outline(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ShadButton(
+            child: const Text('Submit Vote'),
+            onPressed: () {
+              Navigator.pop(context);
+              ShadToaster.of(context).show(
+                ShadToast(
+                  title: const Text('Vote Submitted'),
+                  description: const Text('Your vote has been recorded successfully.'),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
@@ -319,12 +282,13 @@ class _VotingResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     final total = decision.votesFor + decision.votesAgainst + decision.votesAbstain;
     final forPercent = total > 0 ? (decision.votesFor / total * 100) : 0.0;
     final againstPercent = total > 0 ? (decision.votesAgainst / total * 100) : 0.0;
     final abstainPercent = total > 0 ? (decision.votesAbstain / total * 100) : 0.0;
 
-    return AdaptiveCard(
+    return AppCard(
       child: Column(
         children: [
           // Progress bar
@@ -333,17 +297,14 @@ class _VotingResults extends StatelessWidget {
             children: [
               Text(
                 '$total of ${decision.requiredVotes} votes',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: RelunaTheme.textSecondary,
-                ),
+                style: theme.textTheme.muted,
               ),
               Text(
                 '${((total / decision.requiredVotes) * 100).toInt()}%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: RelunaTheme.textPrimary,
+                  color: theme.colorScheme.foreground,
                 ),
               ),
             ],
@@ -353,8 +314,8 @@ class _VotingResults extends StatelessWidget {
             borderRadius: BorderRadius.circular(6),
             child: LinearProgressIndicator(
               value: total / decision.requiredVotes,
-              backgroundColor: RelunaTheme.surfaceDark,
-              valueColor: const AlwaysStoppedAnimation(RelunaTheme.accentColor),
+              backgroundColor: theme.colorScheme.muted,
+              valueColor: AlwaysStoppedAnimation(theme.colorScheme.primary),
               minHeight: 8,
             ),
           ),
@@ -412,6 +373,8 @@ class _VoteBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
     return Column(
       children: [
         Text(
@@ -443,10 +406,7 @@ class _VoteBar extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           '$count $label',
-          style: const TextStyle(
-            fontSize: 12,
-            color: RelunaTheme.textSecondary,
-          ),
+          style: theme.textTheme.small,
         ),
       ],
     );
@@ -466,7 +426,7 @@ class _VoteSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveCard(
+    return AppCard(
       child: Column(
         children: [
           Row(
@@ -505,8 +465,8 @@ class _VoteSection extends StatelessWidget {
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
-            child: AdaptiveButton(
-              text: 'Submit Vote',
+            child: ShadButton(
+              child: const Text('Submit Vote'),
               onPressed: onSubmit,
             ),
           ),
@@ -533,28 +493,30 @@ class _VoteOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: isSelected ? color.withValues(alpha: 0.1) : RelunaTheme.surfaceLight,
+          color: isSelected ? color.withValues(alpha: 0.1) : theme.colorScheme.card,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? color : RelunaTheme.divider,
+            color: isSelected ? color : theme.colorScheme.border,
             width: isSelected ? 2 : 1,
           ),
         ),
         child: Column(
           children: [
-            Icon(icon, size: 28, color: isSelected ? color : RelunaTheme.textSecondary),
+            Icon(icon, size: 28, color: isSelected ? color : theme.colorScheme.mutedForeground),
             const SizedBox(height: 8),
             Text(
               label,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: isSelected ? color : RelunaTheme.textSecondary,
+                color: isSelected ? color : theme.colorScheme.mutedForeground,
               ),
             ),
           ],
@@ -571,56 +533,60 @@ class _ProposalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: RelunaTheme.surfaceLight,
+        color: theme.colorScheme.card,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: RelunaTheme.divider),
+        border: Border.all(color: theme.colorScheme.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 16,
-                backgroundColor: RelunaTheme.accentColor.withValues(alpha: 0.1),
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
                 child: Text(
                   proposal.author[0].toUpperCase(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: RelunaTheme.accentColor,
+                    color: theme.colorScheme.primary,
                   ),
                 ),
               ),
               const SizedBox(width: 10),
               Text(
                 proposal.author,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: RelunaTheme.textPrimary,
+                  color: theme.colorScheme.foreground,
                 ),
               ),
               const Spacer(),
               Text(
                 DateFormat('MMM d').format(proposal.createdAt),
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: RelunaTheme.textTertiary,
-                ),
+                style: theme.textTheme.small,
               ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
             proposal.content,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: RelunaTheme.textPrimary,
+              color: theme.colorScheme.foreground,
               height: 1.5,
             ),
           ),
@@ -637,22 +603,29 @@ class _CommentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: RelunaTheme.surfaceLight,
+        color: theme.colorScheme.card,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: RelunaTheme.divider),
+        border: Border.all(color: theme.colorScheme.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 16,
-                backgroundColor: RelunaTheme.info.withValues(alpha: 0.1),
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: RelunaTheme.info.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
                 child: Text(
                   comment.author[0].toUpperCase(),
                   style: const TextStyle(
@@ -665,28 +638,25 @@ class _CommentCard extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 comment.author,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: RelunaTheme.textPrimary,
+                  color: theme.colorScheme.foreground,
                 ),
               ),
               const Spacer(),
               Text(
                 DateFormat('MMM d').format(comment.createdAt),
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: RelunaTheme.textTertiary,
-                ),
+                style: theme.textTheme.small,
               ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
             comment.content,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: RelunaTheme.textPrimary,
+              color: theme.colorScheme.foreground,
               height: 1.5,
             ),
           ),

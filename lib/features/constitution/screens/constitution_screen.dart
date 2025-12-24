@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
 import '../../../core/providers/providers.dart';
 import '../../../data/models/models.dart';
 import '../../../core/router/app_router.dart';
+import '../../../shared/shared.dart';
 
 @RoutePage()
 class ConstitutionScreen extends ConsumerWidget {
@@ -15,38 +15,22 @@ class ConstitutionScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final constitution = ref.watch(constitutionProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Constitution',
       hasBackButton: true,
       actions: [
-        AdaptiveIconButton(
-          icon: isIOS ? CupertinoIcons.clock : Icons.history,
+        IconButton(
+          icon: const Icon(Icons.history),
           onPressed: () => context.router.push(const ConstitutionVersionsRoute()),
         ),
       ],
       body: constitution.when(
         data: (data) => _ConstitutionContent(constitution: data),
-        loading: () => const Center(child: AdaptiveLoadingIndicator()),
-        error: (error, _) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                isIOS ? CupertinoIcons.exclamationmark_triangle : Icons.error_outline,
-                size: 48,
-                color: RelunaTheme.error,
-              ),
-              const SizedBox(height: 16),
-              const Text('Failed to load constitution'),
-              const SizedBox(height: 8),
-              AdaptiveButton(
-                text: 'Retry',
-                onPressed: () => ref.invalidate(constitutionProvider),
-              ),
-            ],
-          ),
+        loading: () => const Center(child: AppLoadingIndicator()),
+        error: (error, _) => ErrorState(
+          message: 'Failed to load constitution',
+          onRetry: () => ref.invalidate(constitutionProvider),
         ),
       ),
     );
@@ -60,6 +44,8 @@ class _ConstitutionContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -78,6 +64,7 @@ class _ConstitutionContent extends StatelessWidget {
                 ],
               ),
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: theme.colorScheme.border),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,30 +90,15 @@ class _ConstitutionContent extends StatelessWidget {
                         children: [
                           Text(
                             constitution.title,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: RelunaTheme.textPrimary,
+                              color: theme.colorScheme.foreground,
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: RelunaTheme.success.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              'Version ${constitution.version}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: RelunaTheme.success,
-                              ),
-                            ),
+                          ShadBadge.secondary(
+                            child: Text('Version ${constitution.version}'),
                           ),
                         ],
                       ),
@@ -136,9 +108,9 @@ class _ConstitutionContent extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   constitution.preamble,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: RelunaTheme.textSecondary,
+                    color: theme.colorScheme.mutedForeground,
                     fontStyle: FontStyle.italic,
                     height: 1.5,
                   ),
@@ -146,17 +118,17 @@ class _ConstitutionContent extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.edit_outlined,
                       size: 14,
-                      color: RelunaTheme.textTertiary,
+                      color: theme.colorScheme.mutedForeground,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Last edited by ${constitution.lastEditedBy}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: RelunaTheme.textTertiary,
+                        color: theme.colorScheme.mutedForeground,
                       ),
                     ),
                   ],
@@ -166,119 +138,104 @@ class _ConstitutionContent extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           
-          // Sections
-          const Text(
+          // Sections with Accordion
+          Text(
             'Sections',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: RelunaTheme.textPrimary,
+              color: theme.colorScheme.foreground,
             ),
           ),
           const SizedBox(height: 12),
-          ...constitution.sections.map((section) => _SectionCard(
-            section: section,
-            onTap: () => context.router.push(ConstitutionEditRoute(sectionId: section.id)),
-          )),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionCard extends StatelessWidget {
-  final ConstitutionSection section;
-  final VoidCallback? onTap;
-
-  const _SectionCard({
-    required this.section,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AdaptiveCard(
-      onTap: onTap,
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: RelunaTheme.info.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Text(
-                    '${section.order}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: RelunaTheme.info,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          ShadAccordion<int>.multiple(
+            children: constitution.sections.asMap().entries.map((entry) {
+              final index = entry.key;
+              final section = entry.value;
+              return ShadAccordionItem(
+                value: index,
+                title: Row(
                   children: [
-                    Text(
-                      section.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: RelunaTheme.textPrimary,
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: RelunaTheme.info.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '${section.order}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: RelunaTheme.info,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        section.title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.foreground,
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const Icon(
-                Icons.chevron_right,
-                color: RelunaTheme.textTertiary,
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            section.content.length > 150
-                ? '${section.content.substring(0, 150)}...'
-                : section.content,
-            style: const TextStyle(
-              fontSize: 14,
-              color: RelunaTheme.textSecondary,
-              height: 1.5,
-            ),
-          ),
-          if (section.articles.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: RelunaTheme.surfaceDark,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    '${section.articles.length} articles',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: RelunaTheme.textSecondary,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      section.content,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.colorScheme.mutedForeground,
+                        height: 1.6,
+                      ),
                     ),
-                  ),
+                    if (section.articles.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      ...section.articles.asMap().entries.map((entry) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.muted,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Article ${entry.key + 1}: ${entry.value}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: theme.colorScheme.mutedForeground,
+                            ),
+                          ),
+                        ),
+                      )),
+                    ],
+                    const SizedBox(height: 12),
+                    ShadButton.outline(
+                      size: ShadButtonSize.sm,
+                      onPressed: () => context.router.push(ConstitutionEditRoute(sectionId: section.id)),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.edit_outlined, size: 16),
+                          SizedBox(width: 6),
+                          Text('Edit Section'),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
+              );
+            }).toList(),
+          ),
         ],
       ),
     );

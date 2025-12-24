@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../core/theme/theme.dart';
+import '../../shared/shared.dart';
 
 class StubScreen extends StatelessWidget {
   final String title;
@@ -18,9 +18,9 @@ class StubScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    final theme = ShadTheme.of(context);
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: title,
       hasBackButton: true,
       body: Center(
@@ -32,31 +32,31 @@ class StubScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: RelunaTheme.accentColor.withValues(alpha: 0.1),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
                   size: 64,
-                  color: RelunaTheme.accentColor,
+                  color: theme.colorScheme.primary,
                 ),
               ),
               const SizedBox(height: 32),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: RelunaTheme.textPrimary,
+                  color: theme.colorScheme.foreground,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               Text(
                 description,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: RelunaTheme.textSecondary,
+                  color: theme.colorScheme.mutedForeground,
                   height: 1.5,
                 ),
                 textAlign: TextAlign.center,
@@ -75,12 +75,12 @@ class StubScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      isIOS ? CupertinoIcons.clock : Icons.access_time,
+                      Icons.access_time,
                       color: RelunaTheme.warning,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
-                    const Text(
+                    Text(
                       'Coming Soon',
                       style: TextStyle(
                         fontSize: 15,
@@ -92,10 +92,9 @@ class StubScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 48),
-              AdaptiveButton(
-                text: 'Back to Platform',
-                isOutlined: true,
+              ShadButton.outline(
                 onPressed: () => context.router.maybePop(),
+                child: const Text('Back to Platform'),
               ),
             ],
           ),

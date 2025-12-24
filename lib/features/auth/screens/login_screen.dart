@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/router/app_router.dart';
 
@@ -86,34 +85,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   }
 
   void _showError(String message) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
-    if (isIOS) {
-      showCupertinoDialog(
-        context: context,
-        builder: (context) => CupertinoAlertDialog(
-          title: const Text('Notice'),
-          content: Text(message),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('OK'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
-    }
+    ShadToaster.of(context).show(
+      ShadToast(
+        title: const Text('Notice'),
+        description: Text(message),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    final theme = ShadTheme.of(context);
     
     return Scaffold(
-      backgroundColor: RelunaTheme.backgroundLight,
+      backgroundColor: theme.colorScheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -128,38 +113,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: RelunaTheme.accentColor.withValues(alpha: 0.1),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.family_restroom,
                     size: 40,
-                    color: RelunaTheme.accentColor,
+                    color: theme.colorScheme.primary,
                   ),
                 ),
               ),
               
               const SizedBox(height: 24),
               
-              const Text(
+              Text(
                 'Welcome Back',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: RelunaTheme.textPrimary,
-                ),
+                style: theme.textTheme.h2,
               ),
               
               const SizedBox(height: 8),
               
-              const Text(
+              Text(
                 'Sign in to continue to Reluna Family',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: RelunaTheme.textSecondary,
-                ),
+                style: theme.textTheme.muted,
               ),
               
               const SizedBox(height: 32),
@@ -167,20 +145,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               // Tab Bar
               Container(
                 decoration: BoxDecoration(
-                  color: RelunaTheme.surfaceLight,
+                  color: theme.colorScheme.muted,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: RelunaTheme.divider),
                 ),
                 child: TabBar(
                   controller: _tabController,
                   indicator: BoxDecoration(
-                    color: RelunaTheme.accentColor,
+                    color: theme.colorScheme.primary,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   indicatorSize: TabBarIndicatorSize.tab,
                   indicatorPadding: const EdgeInsets.all(4),
-                  labelColor: Colors.white,
-                  unselectedLabelColor: RelunaTheme.textSecondary,
+                  labelColor: theme.colorScheme.primaryForeground,
+                  unselectedLabelColor: theme.colorScheme.mutedForeground,
                   dividerColor: Colors.transparent,
                   tabs: const [
                     Tab(text: 'Sign In'),
@@ -191,41 +168,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               
               const SizedBox(height: 24),
               
-              // Form fields
-              AdaptiveTextField(
+              // Email field
+              ShadInput(
                 controller: _emailController,
-                label: 'Email',
-                placeholder: 'Enter your email',
+                placeholder: const Text('Enter your email'),
                 keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
                 prefix: Icon(
-                  isIOS ? CupertinoIcons.mail : Icons.email_outlined,
-                  color: RelunaTheme.textSecondary,
+                  Icons.email_outlined,
+                  color: theme.colorScheme.mutedForeground,
                   size: 20,
                 ),
               ),
               
               const SizedBox(height: 16),
               
-              AdaptiveTextField(
+              // Password field
+              ShadInput(
                 controller: _passwordController,
-                label: 'Password',
-                placeholder: 'Enter your password',
+                placeholder: const Text('Enter your password'),
                 obscureText: _obscurePassword,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _login(),
                 prefix: Icon(
-                  isIOS ? CupertinoIcons.lock : Icons.lock_outline,
-                  color: RelunaTheme.textSecondary,
+                  Icons.lock_outline,
+                  color: theme.colorScheme.mutedForeground,
                   size: 20,
                 ),
                 suffix: GestureDetector(
                   onTap: () => setState(() => _obscurePassword = !_obscurePassword),
                   child: Icon(
                     _obscurePassword
-                        ? (isIOS ? CupertinoIcons.eye : Icons.visibility_outlined)
-                        : (isIOS ? CupertinoIcons.eye_slash : Icons.visibility_off_outlined),
-                    color: RelunaTheme.textSecondary,
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    color: theme.colorScheme.mutedForeground,
                     size: 20,
                   ),
                 ),
@@ -235,18 +208,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               
               Align(
                 alignment: Alignment.centerRight,
-                child: AdaptiveTextButton(
-                  text: 'Forgot Password?',
+                child: ShadButton.link(
+                  child: const Text('Forgot Password?'),
                   onPressed: () => context.router.push(const ForgotPasswordRoute()),
                 ),
               ),
               
               const SizedBox(height: 24),
               
-              AdaptiveButton(
-                text: 'Sign In',
-                isLoading: _isLoading,
+              ShadButton(
+                child: const Text('Sign In'),
+                enabled: !_isLoading,
                 onPressed: _login,
+                icon: _isLoading
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : null,
               ),
               
               const SizedBox(height: 24),
@@ -254,18 +237,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               // Divider
               Row(
                 children: [
-                  Expanded(child: Divider(color: RelunaTheme.divider)),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                  Expanded(child: Divider(color: theme.colorScheme.border)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       'or continue with',
-                      style: TextStyle(
-                        color: RelunaTheme.textSecondary,
-                        fontSize: 14,
-                      ),
+                      style: theme.textTheme.muted,
                     ),
                   ),
-                  Expanded(child: Divider(color: RelunaTheme.divider)),
+                  Expanded(child: Divider(color: theme.colorScheme.border)),
                 ],
               ),
               
@@ -298,12 +278,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     "Don't have an account? ",
-                    style: TextStyle(color: RelunaTheme.textSecondary),
+                    style: theme.textTheme.muted,
                   ),
-                  AdaptiveTextButton(
-                    text: 'Register',
+                  ShadButton.link(
+                    child: const Text('Register'),
                     onPressed: () => context.router.push(const RegisterRoute()),
                   ),
                 ],
@@ -331,31 +311,17 @@ class _SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(
-          color: RelunaTheme.surfaceLight,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: RelunaTheme.divider),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 24, color: RelunaTheme.textPrimary),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: RelunaTheme.textPrimary,
-              ),
-            ),
-          ],
-        ),
+    final theme = ShadTheme.of(context);
+    
+    return ShadButton.outline(
+      onPressed: onTap,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 24),
+          const SizedBox(width: 8),
+          Text(label),
+        ],
       ),
     );
   }

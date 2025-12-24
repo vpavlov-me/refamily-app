@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../data/models/asset.dart';
 
 // Mock data provider
@@ -136,15 +136,15 @@ class _AssetsScreenState extends ConsumerState<AssetsScreen> {
   Widget build(BuildContext context) {
     final assets = ref.watch(assetsProvider);
     final summary = ref.watch(assetsSummaryProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
     final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Assets',
       hasBackButton: true,
       actions: [
-        AdaptiveIconButton(
-          icon: isIOS ? CupertinoIcons.add : Icons.add,
+        IconButton(
+          icon: const Icon(Icons.add),
           onPressed: () => _showAddAssetDialog(context),
         ),
       ],
@@ -232,8 +232,8 @@ class _AssetsScreenState extends ConsumerState<AssetsScreen> {
           // Search
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: AdaptiveSearchField(
-              placeholder: 'Search assets...',
+            child: ShadInput(
+              placeholder: const Text('Search assets...'),
               onChanged: (value) => setState(() => _searchQuery = value),
             ),
           ),
@@ -327,15 +327,25 @@ class _AssetsScreenState extends ConsumerState<AssetsScreen> {
   }
 
   void _showAddAssetDialog(BuildContext context) {
-    AdaptiveDialog.show(
+    showShadDialog(
       context: context,
-      title: 'Add Asset',
-      content: 'Create a new asset entry for your family portfolio.',
-      confirmText: 'Add',
-      cancelText: 'Cancel',
-      onConfirm: () {
-        // Add asset logic would go here
-      },
+      builder: (context) => ShadDialog.alert(
+        title: const Text('Add Asset'),
+        description: const Text('Create a new asset entry for your family portfolio.'),
+        actions: [
+          ShadButton.outline(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ShadButton(
+            child: const Text('Add'),
+            onPressed: () {
+              Navigator.pop(context);
+              // Add asset logic would go here
+            },
+          ),
+        ],
+      ),
     );
   }
 

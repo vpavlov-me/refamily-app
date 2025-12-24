@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../core/router/app_router.dart';
 
 @RoutePage()
@@ -43,43 +43,29 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   void _showError(String message) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
-    if (isIOS) {
-      showCupertinoDialog(
-        context: context,
-        builder: (context) => CupertinoAlertDialog(
-          title: const Text('Error'),
-          content: Text(message),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('OK'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
-    
-    return AdaptiveScaffold(
-      title: 'Reset Password',
-      hasBackButton: true,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: _emailSent ? _buildSuccessContent() : _buildFormContent(isIOS),
+    ShadToaster.of(context).show(
+      ShadToast.destructive(
+        title: const Text('Error'),
+        description: Text(message),
       ),
     );
   }
 
-  Widget _buildFormContent(bool isIOS) {
+  @override
+  Widget build(BuildContext context) {
+    return AppScaffold(
+      title: 'Reset Password',
+      hasBackButton: true,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: _emailSent ? _buildSuccessContent() : _buildFormContent(),
+      ),
+    );
+  }
+
+  Widget _buildFormContent() {
+    final theme = ShadTheme.of(context);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -90,70 +76,69 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: RelunaTheme.accentColor.withValues(alpha: 0.1),
+              color: theme.colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
-              isIOS ? CupertinoIcons.lock_rotation : Icons.lock_reset,
+              Icons.lock_reset,
               size: 40,
-              color: RelunaTheme.accentColor,
+              color: theme.colorScheme.primary,
             ),
           ),
         ),
         
         const SizedBox(height: 24),
         
-        const Text(
+        Text(
           'Forgot Password?',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: RelunaTheme.textPrimary,
-          ),
+          style: theme.textTheme.h3,
         ),
         
         const SizedBox(height: 8),
         
-        const Text(
+        Text(
           'Enter your email address and we\'ll send you instructions to reset your password.',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 15,
-            color: RelunaTheme.textSecondary,
-            height: 1.5,
-          ),
+          style: theme.textTheme.muted.copyWith(height: 1.5),
         ),
         
         const SizedBox(height: 32),
         
-        AdaptiveTextField(
+        ShadInput(
           controller: _emailController,
-          label: 'Email',
-          placeholder: 'Enter your email',
+          placeholder: const Text('Enter your email'),
           keyboardType: TextInputType.emailAddress,
-          textInputAction: TextInputAction.done,
-          onSubmitted: (_) => _sendResetEmail(),
           prefix: Icon(
-            isIOS ? CupertinoIcons.mail : Icons.email_outlined,
-            color: RelunaTheme.textSecondary,
+            Icons.email_outlined,
+            color: theme.colorScheme.mutedForeground,
             size: 20,
           ),
         ),
         
         const SizedBox(height: 24),
         
-        AdaptiveButton(
-          text: 'Send Reset Link',
-          isLoading: _isLoading,
+        ShadButton(
+          child: const Text('Send Reset Link'),
+          enabled: !_isLoading,
           onPressed: _sendResetEmail,
+          icon: _isLoading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : null,
         ),
         
         const SizedBox(height: 24),
         
         Center(
-          child: AdaptiveTextButton(
-            text: 'Back to Sign In',
+          child: ShadButton.link(
+            child: const Text('Back to Sign In'),
             onPressed: () => context.router.maybePop(),
           ),
         ),
@@ -162,6 +147,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   Widget _buildSuccessContent() {
+    final theme = ShadTheme.of(context);
+    
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -181,13 +168,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         
         const SizedBox(height: 32),
         
-        const Text(
+        Text(
           'Check Your Email',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: RelunaTheme.textPrimary,
-          ),
+          style: theme.textTheme.h3,
         ),
         
         const SizedBox(height: 12),
@@ -195,24 +178,20 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         Text(
           'We\'ve sent password reset instructions to\n${_emailController.text}',
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 15,
-            color: RelunaTheme.textSecondary,
-            height: 1.5,
-          ),
+          style: theme.textTheme.muted.copyWith(height: 1.5),
         ),
         
         const SizedBox(height: 32),
         
-        AdaptiveButton(
-          text: 'Back to Sign In',
+        ShadButton(
+          child: const Text('Back to Sign In'),
           onPressed: () => context.router.replace(const LoginRoute()),
         ),
         
         const SizedBox(height: 16),
         
-        AdaptiveTextButton(
-          text: 'Didn\'t receive email? Resend',
+        ShadButton.link(
+          child: const Text('Didn\'t receive email? Resend'),
           onPressed: () {
             setState(() => _emailSent = false);
           },

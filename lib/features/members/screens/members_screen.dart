@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'dart:io' show Platform;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../core/providers/providers.dart';
 import '../../../data/models/models.dart';
 import '../../../core/router/app_router.dart';
@@ -25,9 +27,9 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
   Widget build(BuildContext context) {
     final members = ref.watch(membersProvider);
     final membersSummary = ref.watch(membersSummaryProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Members',
       hasBackButton: true,
       body: Column(
@@ -37,8 +39,8 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                AdaptiveSearchField(
-                  placeholder: 'Search members...',
+                ShadInput(
+                  placeholder: const Text('Search members...'),
                   onChanged: (value) => setState(() => _searchQuery = value),
                 ),
                 const SizedBox(height: 12),
@@ -137,7 +139,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          isIOS ? CupertinoIcons.person_2 : Icons.people_outline,
+                          Platform.isIOS ? CupertinoIcons.person_2 : Icons.people_outline,
                           size: 64,
                           color: RelunaTheme.textTertiary,
                         ),
@@ -167,7 +169,7 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
                   },
                 );
               },
-              loading: () => const Center(child: AdaptiveLoadingIndicator()),
+              loading: () => const Center(child: AppLoadingIndicator()),
               error: (_, __) => const Center(child: Text('Failed to load members')),
             ),
           ),

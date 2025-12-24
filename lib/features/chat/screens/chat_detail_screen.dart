@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 
 @RoutePage()
 class ChatDetailScreen extends ConsumerStatefulWidget {
@@ -114,132 +114,107 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    final theme = ShadTheme.of(context);
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
-      child: AdaptiveScaffold(
+      child: AppScaffold(
         title: widget.chatName,
         hasBackButton: true,
         actions: [
-          AdaptiveIconButton(
-            icon: isIOS ? CupertinoIcons.info : Icons.info_outline,
-            onPressed: () => _showChatInfo(context),
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: () => _showChatInfo(context, theme),
           ),
         ],
         body: Column(
-        children: [
-          // Messages list
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                final showDate = index == 0 ||
-                    !_isSameDay(_messages[index - 1].timestamp, message.timestamp);
-                final showAvatar = !message.isMe &&
-                    (index == _messages.length - 1 ||
-                        _messages[index + 1].senderId != message.senderId);
+          children: [
+            // Messages list
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  final message = _messages[index];
+                  final showDate = index == 0 ||
+                      !_isSameDay(_messages[index - 1].timestamp, message.timestamp);
+                  final showAvatar = !message.isMe &&
+                      (index == _messages.length - 1 ||
+                          _messages[index + 1].senderId != message.senderId);
 
-                return Column(
-                  children: [
-                    if (showDate) _DateSeparator(date: message.timestamp),
-                    _MessageBubble(
-                      message: message,
-                      showAvatar: showAvatar,
-                      isGroup: widget.isGroup,
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-
-          // Input field
-          Container(
-            padding: EdgeInsets.only(
-              left: 12,
-              right: 12,
-              top: 8,
-              bottom: MediaQuery.of(context).viewInsets.bottom > 0 
-                  ? 8 
-                  : MediaQuery.of(context).padding.bottom + 8,
-            ),
-            decoration: BoxDecoration(
-              color: RelunaTheme.surfaceLight,
-              border: Border(
-                top: BorderSide(color: RelunaTheme.divider),
+                  return Column(
+                    children: [
+                      if (showDate) _DateSeparator(date: message.timestamp),
+                      _MessageBubble(
+                        message: message,
+                        showAvatar: showAvatar,
+                        isGroup: widget.isGroup,
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    isIOS ? CupertinoIcons.paperclip : Icons.attach_file,
-                    color: RelunaTheme.textSecondary,
-                  ),
-                  onPressed: () {},
-                  padding: const EdgeInsets.all(8),
-                  constraints: const BoxConstraints(),
+
+            // Input field
+            Container(
+              padding: EdgeInsets.only(
+                left: 12,
+                right: 12,
+                top: 8,
+                bottom: MediaQuery.of(context).viewInsets.bottom > 0 
+                    ? 8 
+                    : MediaQuery.of(context).padding.bottom + 8,
+              ),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.card,
+                border: Border(
+                  top: BorderSide(color: theme.colorScheme.border),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Type a message...',
-                      hintStyle: TextStyle(color: RelunaTheme.textTertiary),
-                      filled: true,
-                      fillColor: RelunaTheme.backgroundLight,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: RelunaTheme.divider),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(color: RelunaTheme.divider),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: const BorderSide(color: RelunaTheme.accentColor),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      isDense: true,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.attach_file,
+                      color: theme.colorScheme.mutedForeground,
                     ),
-                    minLines: 1,
-                    maxLines: 4,
-                    textInputAction: TextInputAction.newline,
-                    keyboardType: TextInputType.multiline,
-                    style: const TextStyle(fontSize: 16),
+                    onPressed: () {},
+                    padding: const EdgeInsets.all(8),
+                    constraints: const BoxConstraints(),
                   ),
-                ),
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: _sendMessage,
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(
-                      color: RelunaTheme.accentColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      isIOS ? CupertinoIcons.paperplane_fill : Icons.send,
-                      color: Colors.white,
-                      size: 20,
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ShadInput(
+                      controller: _messageController,
+                      placeholder: const Text('Type a message...'),
+                      minLines: 1,
+                      maxLines: 4,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: _sendMessage,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.send,
+                        color: theme.colorScheme.primaryForeground,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -248,15 +223,15 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
-  void _showChatInfo(BuildContext context) {
+  void _showChatInfo(BuildContext context, ShadThemeData theme) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: RelunaTheme.surfaceLight,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.card,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -266,34 +241,28 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               height: 4,
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
-                color: Colors.grey[400],
+                color: theme.colorScheme.border,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: RelunaTheme.accentColor.withValues(alpha: 0.1),
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
                 widget.isGroup ? Icons.group : Icons.person,
                 size: 48,
-                color: RelunaTheme.accentColor,
+                color: theme.colorScheme.primary,
               ),
             ),
             const SizedBox(height: 16),
-            Text(
-              widget.chatName,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text(widget.chatName, style: theme.textTheme.h3),
             const SizedBox(height: 8),
             Text(
               widget.isGroup ? '4 members' : 'Family member',
-              style: TextStyle(color: RelunaTheme.textSecondary),
+              style: theme.textTheme.muted,
             ),
             const SizedBox(height: 24),
             Row(
@@ -349,6 +318,7 @@ class _DateSeparator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     final now = DateTime.now();
     final isToday = date.year == now.year && date.month == now.month && date.day == now.day;
     final isYesterday = date.year == now.year && 
@@ -370,15 +340,12 @@ class _DateSeparator extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: RelunaTheme.divider,
+            color: theme.colorScheme.muted,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             dateText,
-            style: const TextStyle(
-              fontSize: 12,
-              color: RelunaTheme.textSecondary,
-            ),
+            style: theme.textTheme.small,
           ),
         ),
       ),
@@ -399,6 +366,7 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     final timeFormat = DateFormat('h:mm a');
 
     return Padding(
@@ -409,15 +377,20 @@ class _MessageBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!message.isMe && showAvatar)
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: RelunaTheme.accentColor.withValues(alpha: 0.2),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
               child: Text(
                 message.senderName[0],
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: RelunaTheme.accentColor,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             )
@@ -429,8 +402,8 @@ class _MessageBubble extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: message.isMe
-                    ? RelunaTheme.accentColor
-                    : const Color(0xFFEEEFF1),
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.muted,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(18),
                   topRight: const Radius.circular(18),
@@ -446,17 +419,19 @@ class _MessageBubble extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 4),
                       child: Text(
                         message.senderName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 12,
-                          color: RelunaTheme.accentColor,
+                          color: theme.colorScheme.primary,
                         ),
                       ),
                     ),
                   Text(
                     message.content,
                     style: TextStyle(
-                      color: message.isMe ? Colors.white : RelunaTheme.textPrimary,
+                      color: message.isMe 
+                          ? theme.colorScheme.primaryForeground 
+                          : theme.colorScheme.foreground,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -468,16 +443,16 @@ class _MessageBubble extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           color: message.isMe
-                              ? Colors.white70
-                              : RelunaTheme.textSecondary,
+                              ? theme.colorScheme.primaryForeground.withValues(alpha: 0.7)
+                              : theme.colorScheme.mutedForeground,
                         ),
                       ),
                       if (message.isMe) ...[
                         const SizedBox(width: 4),
-                        const Icon(
+                        Icon(
                           Icons.done_all,
                           size: 14,
-                          color: Colors.white70,
+                          color: theme.colorScheme.primaryForeground.withValues(alpha: 0.7),
                         ),
                       ],
                     ],
@@ -506,6 +481,8 @@ class _InfoAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -513,18 +490,15 @@ class _InfoAction extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: RelunaTheme.surfaceDark,
+              color: theme.colorScheme.muted,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: RelunaTheme.accentColor),
+            child: Icon(icon, color: theme.colorScheme.primary),
           ),
           const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 12,
-              color: RelunaTheme.textSecondary,
-            ),
+            style: theme.textTheme.small,
           ),
         ],
       ),

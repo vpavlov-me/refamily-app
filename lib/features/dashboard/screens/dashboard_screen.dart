@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import '../../../core/theme/theme.dart';
 import '../../../core/providers/providers.dart';
 import '../../../data/models/models.dart';
 import '../../../core/router/app_router.dart';
+import '../../../shared/shared.dart';
 
 @RoutePage()
 class DashboardScreen extends ConsumerWidget {
@@ -15,6 +15,7 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ShadTheme.of(context);
     final authState = ref.watch(authStateProvider);
     final constitution = ref.watch(constitutionProvider);
     final membersSummary = ref.watch(membersSummaryProvider);
@@ -22,15 +23,14 @@ class DashboardScreen extends ConsumerWidget {
     final meetingsSummary = ref.watch(meetingsSummaryProvider);
     final activities = ref.watch(activitiesProvider);
     final notificationsSummary = ref.watch(notificationsSummaryProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Dashboard',
       actions: [
         Stack(
           children: [
-            AdaptiveIconButton(
-              icon: isIOS ? CupertinoIcons.bell : Icons.notifications_outlined,
+            IconButton(
+              icon: const Icon(Icons.notifications_outlined),
               onPressed: () => context.router.push(const NotificationsRoute()),
             ),
             notificationsSummary.when(
@@ -40,8 +40,8 @@ class DashboardScreen extends ConsumerWidget {
                       top: 8,
                       child: Container(
                         padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: RelunaTheme.error,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.destructive,
                           shape: BoxShape.circle,
                         ),
                         child: Text(
@@ -107,6 +107,7 @@ class _WelcomeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     final hour = DateTime.now().hour;
     String greeting;
     if (hour < 12) {
@@ -121,34 +122,17 @@ class _WelcomeSection extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: RelunaTheme.accentColor.withValues(alpha: 0.1),
-            child: user?.avatar != null
-                ? ClipOval(
-                    child: Image.network(
-                      user!.avatar!,
-                      width: 56,
-                      height: 56,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Text(
-                        user?.name.substring(0, 1).toUpperCase() ?? 'U',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: RelunaTheme.accentColor,
-                        ),
-                      ),
-                    ),
-                  )
-                : Text(
-                    user?.name.substring(0, 1).toUpperCase() ?? 'U',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: RelunaTheme.accentColor,
-                    ),
-                  ),
+          ShadAvatar(
+            user?.avatar ?? 'placeholder',
+            size: const Size(56, 56),
+            placeholder: Text(
+              user?.name.substring(0, 1).toUpperCase() ?? 'U',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -157,35 +141,23 @@ class _WelcomeSection extends StatelessWidget {
               children: [
                 Text(
                   greeting,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: RelunaTheme.textSecondary,
+                    color: theme.colorScheme.mutedForeground,
                   ),
                 ),
                 Text(
                   user?.name ?? 'User',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: RelunaTheme.textPrimary,
+                    color: theme.colorScheme.foreground,
                   ),
                 ),
                 if (user?.role != null)
-                  Container(
-                    margin: const EdgeInsets.only(top: 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: RelunaTheme.getRoleColor(user!.role).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      user!.role,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: RelunaTheme.getRoleColor(user!.role),
-                      ),
-                    ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: RoleBadge(role: user!.role),
                   ),
               ],
             ),
@@ -212,7 +184,7 @@ class _QuickStats extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: _StatCard(
+            child: StatCard(
               icon: Icons.how_to_vote_outlined,
               label: 'Active Decisions',
               value: decisionsSummary.when(
@@ -226,7 +198,7 @@ class _QuickStats extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: _StatCard(
+            child: StatCard(
               icon: Icons.event_outlined,
               label: 'Upcoming Meetings',
               value: meetingsSummary.when(
@@ -244,70 +216,6 @@ class _QuickStats extends StatelessWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-  final VoidCallback? onTap;
-
-  const _StatCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AdaptiveCard(
-      margin: const EdgeInsets.only(bottom: 16),
-      onTap: onTap,
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: RelunaTheme.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: RelunaTheme.textTertiary,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _ConstitutionCard extends StatelessWidget {
   final AsyncValue<Constitution> constitution;
 
@@ -315,7 +223,9 @@ class _ConstitutionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveCard(
+    final theme = ShadTheme.of(context);
+    
+    return AppCard(
       onTap: () => context.router.push(const ConstitutionRoute()),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -335,31 +245,19 @@ class _ConstitutionCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
                   'Family Constitution',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: RelunaTheme.textPrimary,
+                    color: theme.colorScheme.foreground,
                   ),
                 ),
               ),
               constitution.when(
-                data: (c) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: RelunaTheme.success.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    'v${c.version}',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: RelunaTheme.success,
-                    ),
-                  ),
+                data: (c) => ShadBadge.secondary(
+                  child: Text('v${c.version}'),
                 ),
                 loading: () => const SizedBox.shrink(),
                 error: (_, __) => const SizedBox.shrink(),
@@ -373,42 +271,32 @@ class _ConstitutionCard extends StatelessWidget {
               children: [
                 Text(
                   'Last edited ${_formatDate(c.lastEditedAt)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: RelunaTheme.textSecondary,
+                    color: theme.colorScheme.mutedForeground,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'by ${c.lastEditedBy}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: RelunaTheme.textTertiary,
+                    color: theme.colorScheme.mutedForeground.withValues(alpha: 0.7),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: RelunaTheme.accentColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                    ShadButton(
+                      size: ShadButtonSize.sm,
+                      onPressed: () => context.router.push(const ConstitutionRoute()),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Open',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
+                          Text('Open'),
                           SizedBox(width: 4),
-                          Icon(Icons.arrow_forward, color: Colors.white, size: 16),
+                          Icon(Icons.arrow_forward, size: 16),
                         ],
                       ),
                     ),
@@ -416,7 +304,7 @@ class _ConstitutionCard extends StatelessWidget {
                 ),
               ],
             ),
-            loading: () => const Center(child: AdaptiveLoadingIndicator(size: 24)),
+            loading: () => const Center(child: AppLoadingIndicator(size: 24)),
             error: (_, __) => const Text('Failed to load constitution'),
           ),
         ],
@@ -447,7 +335,9 @@ class _MembersCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveCard(
+    final theme = ShadTheme.of(context);
+    
+    return AppCard(
       onTap: () => context.router.push(const MembersRoute()),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -467,20 +357,20 @@ class _MembersCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
                   'Family Members',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: RelunaTheme.textPrimary,
+                    color: theme.colorScheme.foreground,
                   ),
                 ),
               ),
               Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
-                color: RelunaTheme.textTertiary,
+                color: theme.colorScheme.mutedForeground,
               ),
             ],
           ),
@@ -491,18 +381,9 @@ class _MembersCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _MemberStat(
-                      label: 'Total',
-                      value: '${summary.totalMembers}',
-                    ),
-                    _MemberStat(
-                      label: 'Active',
-                      value: '${summary.activeMembers}',
-                    ),
-                    _MemberStat(
-                      label: 'Generations',
-                      value: '${summary.generations}',
-                    ),
+                    _MemberStat(label: 'Total', value: '${summary.totalMembers}'),
+                    _MemberStat(label: 'Active', value: '${summary.activeMembers}'),
+                    _MemberStat(label: 'Generations', value: '${summary.generations}'),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -510,26 +391,12 @@ class _MembersCard extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: summary.byRole.entries.map((entry) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: RelunaTheme.getRoleColor(entry.key).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        '${entry.value} ${entry.key}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: RelunaTheme.getRoleColor(entry.key),
-                        ),
-                      ),
-                    );
+                    return RoleBadge(role: '${entry.value} ${entry.key}');
                   }).toList(),
                 ),
               ],
             ),
-            loading: () => const Center(child: AdaptiveLoadingIndicator(size: 24)),
+            loading: () => const Center(child: AppLoadingIndicator(size: 24)),
             error: (_, __) => const Text('Failed to load members'),
           ),
         ],
@@ -549,21 +416,23 @@ class _MemberStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
     return Column(
       children: [
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: RelunaTheme.textPrimary,
+            color: theme.colorScheme.foreground,
           ),
         ),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: RelunaTheme.textSecondary,
+            color: theme.colorScheme.mutedForeground,
           ),
         ),
       ],
@@ -581,17 +450,7 @@ class _RecentActivity extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Text(
-            'Recent Activity',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: RelunaTheme.textPrimary,
-            ),
-          ),
-        ),
+        const SectionHeader(title: 'Recent Activity'),
         activities.when(
           data: (items) => items.isEmpty
               ? const Padding(
@@ -604,12 +463,17 @@ class _RecentActivity extends StatelessWidget {
                   itemCount: items.length > 5 ? 5 : items.length,
                   itemBuilder: (context, index) {
                     final activity = items[index];
-                    return _ActivityItem(activity: activity);
+                    return ActivityItem(
+                      title: activity.title,
+                      description: activity.description,
+                      type: activity.type,
+                      timestamp: activity.timestamp,
+                    );
                   },
                 ),
           loading: () => const Padding(
             padding: EdgeInsets.all(32),
-            child: Center(child: AdaptiveLoadingIndicator()),
+            child: Center(child: AppLoadingIndicator()),
           ),
           error: (_, __) => const Padding(
             padding: EdgeInsets.all(16),
@@ -618,118 +482,5 @@ class _RecentActivity extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-class _ActivityItem extends StatelessWidget {
-  final Activity activity;
-
-  const _ActivityItem({required this.activity});
-
-  IconData get _icon {
-    switch (activity.type) {
-      case 'vote':
-        return Icons.how_to_vote_outlined;
-      case 'constitution':
-        return Icons.description_outlined;
-      case 'meeting':
-        return Icons.event_outlined;
-      case 'decision':
-        return Icons.gavel_outlined;
-      case 'comment':
-        return Icons.comment_outlined;
-      case 'member':
-        return Icons.person_outlined;
-      default:
-        return Icons.notifications_outlined;
-    }
-  }
-
-  Color get _color {
-    switch (activity.type) {
-      case 'vote':
-        return RelunaTheme.accentColor;
-      case 'constitution':
-        return RelunaTheme.info;
-      case 'meeting':
-        return RelunaTheme.success;
-      case 'decision':
-        return RelunaTheme.warning;
-      case 'comment':
-        return RelunaTheme.roleColors['Advisor']!;
-      case 'member':
-        return RelunaTheme.roleColors['Founder']!;
-      default:
-        return RelunaTheme.textSecondary;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: _color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(_icon, size: 20, color: _color),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  activity.title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: RelunaTheme.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  activity.description,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: RelunaTheme.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _formatTimestamp(activity.timestamp),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: RelunaTheme.textTertiary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatTimestamp(DateTime timestamp) {
-    final now = DateTime.now();
-    final diff = now.difference(timestamp);
-    
-    if (diff.inMinutes < 1) {
-      return 'Just now';
-    } else if (diff.inHours < 1) {
-      return '${diff.inMinutes}m ago';
-    } else if (diff.inDays < 1) {
-      return '${diff.inHours}h ago';
-    } else if (diff.inDays < 7) {
-      return '${diff.inDays}d ago';
-    } else {
-      return DateFormat('MMM d').format(timestamp);
-    }
   }
 }

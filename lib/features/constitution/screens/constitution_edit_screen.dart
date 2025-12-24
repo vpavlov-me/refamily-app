@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../core/providers/providers.dart';
 import '../../../data/models/models.dart';
 
@@ -51,7 +51,7 @@ class _ConstitutionEditScreenState extends ConsumerState<ConstitutionEditScreen>
   @override
   Widget build(BuildContext context) {
     final constitution = ref.watch(constitutionProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
     return constitution.when(
       data: (data) {
@@ -61,18 +61,18 @@ class _ConstitutionEditScreenState extends ConsumerState<ConstitutionEditScreen>
         );
         _initializeControllers(section);
 
-        return AdaptiveScaffold(
+        return AppScaffold(
           title: 'Section ${section.order}',
           hasBackButton: true,
           actions: [
             if (_isEditing)
-              AdaptiveTextButton(
-                text: 'Save',
+              ShadButton.link(
+                child: const Text('Save'),
                 onPressed: _hasChanges ? () => _saveChanges(section) : null,
               )
             else
-              AdaptiveIconButton(
-                icon: isIOS ? CupertinoIcons.pencil : Icons.edit_outlined,
+              IconButton(
+                icon: const Icon(Icons.edit_outlined),
                 onPressed: () => setState(() => _isEditing = true),
               ),
           ],
@@ -173,9 +173,9 @@ class _ConstitutionEditScreenState extends ConsumerState<ConstitutionEditScreen>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  AdaptiveTextField(
+                  ShadInput(
                     controller: _titleController,
-                    placeholder: 'Enter section title',
+                    placeholder: const Text('Enter section title'),
                     onChanged: (_) => setState(() => _hasChanges = true),
                   ),
                   const SizedBox(height: 20),
@@ -215,9 +215,8 @@ class _ConstitutionEditScreenState extends ConsumerState<ConstitutionEditScreen>
                   Row(
                     children: [
                       Expanded(
-                        child: AdaptiveButton(
-                          text: 'Cancel',
-                          isOutlined: true,
+                        child: ShadButton.outline(
+                          child: const Text('Cancel'),
                           onPressed: () {
                             _titleController.text = section.title;
                             _contentController.text = section.content;
@@ -236,12 +235,12 @@ class _ConstitutionEditScreenState extends ConsumerState<ConstitutionEditScreen>
           ),
         );
       },
-      loading: () => const AdaptiveScaffold(
+      loading: () => const AppScaffold(
         title: 'Loading...',
         hasBackButton: true,
-        body: Center(child: AdaptiveLoadingIndicator()),
+        body: Center(child: AppLoadingIndicator()),
       ),
-      error: (_, __) => AdaptiveScaffold(
+      error: (_, __) => AppScaffold(
         title: 'Error',
         hasBackButton: true,
         body: const Center(child: Text('Failed to load section')),
@@ -251,17 +250,24 @@ class _ConstitutionEditScreenState extends ConsumerState<ConstitutionEditScreen>
 
   void _saveChanges(ConstitutionSection section) {
     // In a real app, this would call an API
-    AdaptiveDialog.show(
+    showShadDialog(
       context: context,
-      title: 'Changes Saved',
-      content: 'Your changes to "${_titleController.text}" have been saved and are pending review.',
-      confirmText: 'OK',
-      onConfirm: () {
-        setState(() {
-          _isEditing = false;
-          _hasChanges = false;
-        });
-      },
+      builder: (dialogContext) => ShadDialog.alert(
+        title: const Text('Changes Saved'),
+        description: Text('Your changes to "${_titleController.text}" have been saved and are pending review.'),
+        actions: [
+          ShadButton(
+            child: const Text('OK'),
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              setState(() {
+                _isEditing = false;
+                _hasChanges = false;
+              });
+            },
+          ),
+        ],
+      ),
     );
   }
 }

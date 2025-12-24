@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../data/models/conflict.dart';
 
 // Mock data providers
@@ -105,14 +105,14 @@ class _ConflictResolutionScreenState extends ConsumerState<ConflictResolutionScr
   Widget build(BuildContext context) {
     final conflicts = ref.watch(conflictsProvider);
     final summary = ref.watch(conflictsSummaryProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Conflict Resolution',
       hasBackButton: true,
       actions: [
-        AdaptiveIconButton(
-          icon: isIOS ? CupertinoIcons.add : Icons.add,
+        IconButton(
+          icon: const Icon(Icons.add),
           onPressed: () => _showReportConflictDialog(context),
         ),
       ],
@@ -252,15 +252,25 @@ class _ConflictResolutionScreenState extends ConsumerState<ConflictResolutionScr
   }
 
   void _showReportConflictDialog(BuildContext context) {
-    AdaptiveDialog.show(
+    showShadDialog(
       context: context,
-      title: 'Report a Conflict',
-      content: 'Describe the conflict that needs resolution. This will be reviewed by family mediators.',
-      confirmText: 'Report',
-      cancelText: 'Cancel',
-      onConfirm: () {
-        // Report conflict logic would go here
-      },
+      builder: (context) => ShadDialog.alert(
+        title: const Text('Report a Conflict'),
+        description: const Text('Describe the conflict that needs resolution. This will be reviewed by family mediators.'),
+        actions: [
+          ShadButton.outline(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ShadButton(
+            child: const Text('Report'),
+            onPressed: () {
+              Navigator.pop(context);
+              // Report conflict logic would go here
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -428,9 +438,8 @@ class _ConflictResolutionScreenState extends ConsumerState<ConflictResolutionScr
                     if (conflict.status != ConflictStatus.resolved)
                       SizedBox(
                         width: double.infinity,
-                        child: AdaptiveButton(
-                          text: 'Add Note',
-                          isOutlined: true,
+                        child: ShadButton.outline(
+                          child: const Text('Add Note'),
                           onPressed: () {},
                         ),
                       ),

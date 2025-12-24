@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/router/app_router.dart';
 
@@ -73,8 +73,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
     return Scaffold(
-      backgroundColor: RelunaTheme.accentColor,
+      backgroundColor: theme.colorScheme.primary,
       body: Center(
         child: AnimatedBuilder(
           animation: _controller,
@@ -100,18 +102,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.family_restroom,
                         size: 60,
-                        color: RelunaTheme.accentColor,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'Reluna Family',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
+                      style: theme.textTheme.h1.copyWith(
                         color: Colors.white,
                         letterSpacing: 1.2,
                       ),

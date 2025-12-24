@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/router/app_router.dart';
 
@@ -62,10 +61,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    final theme = ShadTheme.of(context);
     
     return Scaffold(
-      backgroundColor: RelunaTheme.backgroundLight,
+      backgroundColor: theme.colorScheme.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -74,8 +73,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               alignment: Alignment.topRight,
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: AdaptiveTextButton(
-                  text: 'Skip',
+                child: ShadButton.ghost(
+                  child: const Text('Skip'),
                   onPressed: _completeOnboarding,
                 ),
               ),
@@ -111,19 +110,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         Text(
                           slide.title,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: RelunaTheme.textPrimary,
-                          ),
+                          style: theme.textTheme.h2,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           slide.description,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: RelunaTheme.textSecondary,
+                          style: theme.textTheme.muted.copyWith(
                             height: 1.5,
                           ),
                         ),
@@ -142,8 +135,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 dotHeight: 10,
                 dotWidth: 10,
                 spacing: 12,
-                dotColor: RelunaTheme.divider,
-                activeDotColor: RelunaTheme.accentColor,
+                dotColor: theme.colorScheme.border,
+                activeDotColor: theme.colorScheme.primary,
               ),
             ),
             
@@ -155,12 +148,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               child: SizedBox(
                 width: double.infinity,
                 child: _currentPage == _slides.length - 1
-                    ? AdaptiveButton(
-                        text: 'Get Started',
+                    ? ShadButton(
+                        child: const Text('Get Started'),
                         onPressed: _completeOnboarding,
                       )
-                    : AdaptiveButton(
-                        text: 'Next',
+                    : ShadButton(
+                        child: const Text('Next'),
                         onPressed: () {
                           _pageController.nextPage(
                             duration: const Duration(milliseconds: 300),

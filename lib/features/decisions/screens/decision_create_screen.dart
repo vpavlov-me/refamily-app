@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'dart:io' show Platform;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 
 @RoutePage()
 class DecisionCreateScreen extends ConsumerStatefulWidget {
@@ -40,14 +42,14 @@ class _DecisionCreateScreenState extends ConsumerState<DecisionCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'New Decision',
       hasBackButton: true,
       actions: [
-        AdaptiveTextButton(
-          text: 'Submit',
+        ShadButton.link(
+          child: const Text('Submit'),
           onPressed: _isLoading ? null : _submitDecision,
         ),
       ],
@@ -71,7 +73,7 @@ class _DecisionCreateScreenState extends ConsumerState<DecisionCreateScreen> {
                 child: Row(
                   children: [
                     Icon(
-                      isIOS ? CupertinoIcons.info : Icons.info_outline,
+                      Icons.info_outline,
                       color: RelunaTheme.info,
                       size: 24,
                     ),
@@ -101,15 +103,9 @@ class _DecisionCreateScreenState extends ConsumerState<DecisionCreateScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              AdaptiveTextField(
+              ShadInput(
                 controller: _titleController,
-                placeholder: 'Enter decision title',
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a title';
-                  }
-                  return null;
-                },
+                placeholder: const Text('Enter decision title'),
               ),
               const SizedBox(height: 20),
 
@@ -178,7 +174,7 @@ class _DecisionCreateScreenState extends ConsumerState<DecisionCreateScreen> {
                   child: Row(
                     children: [
                       Icon(
-                        isIOS ? CupertinoIcons.calendar : Icons.calendar_today_outlined,
+                        Icons.calendar_today_outlined,
                         color: RelunaTheme.textSecondary,
                         size: 20,
                       ),
@@ -253,17 +249,16 @@ class _DecisionCreateScreenState extends ConsumerState<DecisionCreateScreen> {
               // Submit button
               SizedBox(
                 width: double.infinity,
-                child: AdaptiveButton(
-                  text: _isLoading ? 'Submitting...' : 'Submit Decision',
+                child: ShadButton(
+                  child: Text(_isLoading ? 'Submitting...' : 'Submit Decision'),
                   onPressed: _isLoading ? null : _submitDecision,
                 ),
               ),
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
-                child: AdaptiveButton(
-                  text: 'Save as Draft',
-                  isOutlined: true,
+                child: ShadButton.outline(
+                  child: const Text('Save as Draft'),
                   onPressed: _isLoading ? null : _saveDraft,
                 ),
               ),
@@ -275,7 +270,7 @@ class _DecisionCreateScreenState extends ConsumerState<DecisionCreateScreen> {
   }
 
   Future<void> _selectDeadline(BuildContext context) async {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    final isIOS = Platform.isIOS;
     
     if (isIOS) {
       await showCupertinoModalPopup(
@@ -333,23 +328,39 @@ class _DecisionCreateScreenState extends ConsumerState<DecisionCreateScreen> {
       Future.delayed(const Duration(seconds: 1), () {
         setState(() => _isLoading = false);
         
-        AdaptiveDialog.show(
+        showShadDialog(
           context: context,
-          title: 'Decision Submitted',
-          content: 'Your decision has been submitted for voting. You will be notified when votes are cast.',
-          confirmText: 'OK',
-          onConfirm: () => context.router.maybePop(),
+          builder: (dialogContext) => ShadDialog.alert(
+            title: const Text('Decision Submitted'),
+            description: const Text('Your decision has been submitted for voting. You will be notified when votes are cast.'),
+            actions: [
+              ShadButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                  context.router.maybePop();
+                },
+              ),
+            ],
+          ),
         );
       });
     }
   }
 
   void _saveDraft() {
-    AdaptiveDialog.show(
+    showShadDialog(
       context: context,
-      title: 'Draft Saved',
-      content: 'Your decision has been saved as a draft. You can continue editing it later.',
-      confirmText: 'OK',
+      builder: (context) => ShadDialog.alert(
+        title: const Text('Draft Saved'),
+        description: const Text('Your decision has been saved as a draft. You can continue editing it later.'),
+        actions: [
+          ShadButton(
+            child: const Text('OK'),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ],
+      ),
     );
   }
 }

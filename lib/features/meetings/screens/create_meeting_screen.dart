@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 
 // Meeting types as strings (matching Meeting model)
 const List<String> _meetingTypes = [
@@ -53,14 +53,14 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'New Meeting',
       hasBackButton: true,
       actions: [
-        AdaptiveTextButton(
-          text: 'Create',
+        ShadButton.link(
+          child: const Text('Create'),
           onPressed: _createMeeting,
         ),
       ],
@@ -147,7 +147,7 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
               children: [
                 Expanded(
                   child: _SelectionTile(
-                    icon: isIOS ? CupertinoIcons.calendar : Icons.calendar_today,
+                    icon: Icons.calendar_today,
                     label: DateFormat('MMM d, yyyy').format(_selectedDate),
                     onTap: () => _selectDate(context),
                   ),
@@ -155,7 +155,7 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _SelectionTile(
-                    icon: isIOS ? CupertinoIcons.clock : Icons.access_time,
+                    icon: Icons.access_time,
                     label: _selectedTime.format(context),
                     onTap: () => _selectTime(context),
                   ),
@@ -175,7 +175,7 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
               child: Row(
                 children: [
                   Icon(
-                    isIOS ? CupertinoIcons.timer : Icons.timelapse,
+                    Icons.timelapse,
                     color: RelunaTheme.accentColor,
                     size: 20,
                   ),
@@ -211,7 +211,7 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
               decoration: InputDecoration(
                 hintText: 'Enter location or video link',
                 prefixIcon: Icon(
-                  isIOS ? CupertinoIcons.location : Icons.location_on_outlined,
+                  Icons.location_on_outlined,
                   color: RelunaTheme.textSecondary,
                 ),
                 filled: true,
@@ -323,14 +323,21 @@ class _CreateMeetingScreenState extends ConsumerState<CreateMeetingScreen> {
     if (_formKey.currentState!.validate()) {
       // Create meeting logic would go here
       // For now, show success and go back
-      AdaptiveDialog.show(
+      showShadDialog(
         context: context,
-        title: 'Meeting Created',
-        content: 'Your meeting "${_titleController.text}" has been scheduled for ${DateFormat('MMM d, yyyy').format(_selectedDate)} at ${_selectedTime.format(context)}.',
-        confirmText: 'OK',
-        onConfirm: () {
-          Navigator.of(context).pop();
-        },
+        builder: (dialogContext) => ShadDialog.alert(
+          title: const Text('Meeting Created'),
+          description: Text('Your meeting "${_titleController.text}" has been scheduled for ${DateFormat('MMM d, yyyy').format(_selectedDate)} at ${_selectedTime.format(context)}.'),
+          actions: [
+            ShadButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
       );
     }
   }
@@ -412,43 +419,4 @@ class _SelectionTile extends StatelessWidget {
   }
 }
 
-class AdaptiveTextButton extends StatelessWidget {
-  final String text;
-  final VoidCallback? onPressed;
-
-  const AdaptiveTextButton({
-    super.key,
-    required this.text,
-    this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
-    
-    if (isIOS) {
-      return CupertinoButton(
-        padding: EdgeInsets.zero,
-        onPressed: onPressed,
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: RelunaTheme.accentColor,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      );
-    }
-    
-    return TextButton(
-      onPressed: onPressed,
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: RelunaTheme.accentColor,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
+// Removed obsolete AdaptiveTextButton - now using ShadButton.link

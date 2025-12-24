@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../data/models/philanthropy.dart';
 
 // Mock data providers
@@ -154,15 +154,15 @@ class _PhilanthropyScreenState extends ConsumerState<PhilanthropyScreen> with Si
     final causes = ref.watch(causesProvider);
     final donations = ref.watch(donationsProvider);
     final summary = ref.watch(philanthropySummaryProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
     final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Philanthropy',
       hasBackButton: true,
       actions: [
-        AdaptiveIconButton(
-          icon: isIOS ? CupertinoIcons.add : Icons.add,
+        IconButton(
+          icon: const Icon(Icons.add),
           onPressed: () => _showAddCauseDialog(context),
         ),
       ],
@@ -337,28 +337,48 @@ class _PhilanthropyScreenState extends ConsumerState<PhilanthropyScreen> with Si
   }
 
   void _showAddCauseDialog(BuildContext context) {
-    AdaptiveDialog.show(
+    showShadDialog(
       context: context,
-      title: 'Add Cause',
-      content: 'Create a new philanthropic cause for the family to support.',
-      confirmText: 'Create',
-      cancelText: 'Cancel',
-      onConfirm: () {
-        // Add cause logic would go here
-      },
+      builder: (context) => ShadDialog.alert(
+        title: const Text('Add Cause'),
+        description: const Text('Create a new philanthropic cause for the family to support.'),
+        actions: [
+          ShadButton.outline(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ShadButton(
+            child: const Text('Create'),
+            onPressed: () {
+              Navigator.pop(context);
+              // Add cause logic would go here
+            },
+          ),
+        ],
+      ),
     );
   }
 
   void _showDonateDialog(BuildContext context, PhilanthropicCause cause) {
-    AdaptiveDialog.show(
+    showShadDialog(
       context: context,
-      title: 'Donate to ${cause.name}',
-      content: 'Choose an amount to donate to this cause.',
-      confirmText: 'Donate',
-      cancelText: 'Cancel',
-      onConfirm: () {
-        // Donate logic would go here
-      },
+      builder: (context) => ShadDialog.alert(
+        title: Text('Donate to ${cause.name}'),
+        description: const Text('Choose an amount to donate to this cause.'),
+        actions: [
+          ShadButton.outline(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ShadButton(
+            child: const Text('Donate'),
+            onPressed: () {
+              Navigator.pop(context);
+              // Donate logic would go here
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -454,8 +474,8 @@ class _PhilanthropyScreenState extends ConsumerState<PhilanthropyScreen> with Si
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
-                      child: AdaptiveButton(
-                        text: 'Make a Donation',
+                      child: ShadButton(
+                        child: const Text('Make a Donation'),
                         onPressed: () {
                           Navigator.pop(context);
                           _showDonateDialog(context, cause);

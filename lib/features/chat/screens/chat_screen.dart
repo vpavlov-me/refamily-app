@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../core/router/app_router.dart';
 
 @RoutePage()
@@ -12,7 +12,7 @@ class ChatScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    final theme = ShadTheme.of(context);
 
     // Mock chat conversations
     final conversations = [
@@ -58,59 +58,34 @@ class ChatScreen extends ConsumerWidget {
       ),
     ];
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Chat',
       actions: [
-        AdaptiveIconButton(
-          icon: isIOS ? CupertinoIcons.square_pencil : Icons.edit_outlined,
+        IconButton(
+          icon: const Icon(Icons.edit_outlined),
           onPressed: () {
-            // Show new conversation dialog
-            _showNewConversationDialog(context);
+            _showNewConversationDialog(context, theme);
           },
         ),
       ],
       body: conversations.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    isIOS ? CupertinoIcons.chat_bubble_2 : Icons.chat_bubble_outline,
-                    size: 64,
-                    color: RelunaTheme.textTertiary,
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'No conversations yet',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: RelunaTheme.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Start a conversation with family members',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: RelunaTheme.textTertiary,
-                    ),
-                  ),
-                ],
-              ),
+          ? EmptyState(
+              icon: Icons.chat_bubble_outline,
+              title: 'No conversations yet',
+              subtitle: 'Start a conversation with family members',
             )
           : ListView.separated(
               padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: conversations.length,
-              separatorBuilder: (context, index) => const Divider(
+              separatorBuilder: (context, index) => Divider(
                 height: 1,
                 indent: 76,
+                color: theme.colorScheme.border,
               ),
               itemBuilder: (context, index) {
                 final conversation = conversations[index];
                 return _ChatListItem(
                   conversation: conversation,
-                  isIOS: isIOS,
                   onTap: () {
                     context.router.push(ChatDetailRoute(
                       chatId: 'chat_$index',
@@ -124,7 +99,7 @@ class ChatScreen extends ConsumerWidget {
     );
   }
 
-  void _showNewConversationDialog(BuildContext context) {
+  void _showNewConversationDialog(BuildContext context, ShadThemeData theme) {
     final familyMembers = [
       ('Victoria Reluna', 'https://i.pravatar.cc/150?u=victoria'),
       ('Michael Reluna', 'https://i.pravatar.cc/150?u=michael'),
@@ -138,9 +113,9 @@ class ChatScreen extends ConsumerWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: RelunaTheme.surfaceLight,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.card,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -152,40 +127,40 @@ class ChatScreen extends ConsumerWidget {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: Colors.grey[400],
+                  color: theme.colorScheme.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
-            const Text(
-              'New Conversation',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text('New Conversation', style: theme.textTheme.h4),
             const SizedBox(height: 8),
             Text(
               'Select a family member to chat with',
-              style: TextStyle(color: RelunaTheme.textSecondary),
+              style: theme.textTheme.muted,
             ),
             const SizedBox(height: 20),
             ...familyMembers.map((member) => ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: CircleAvatar(
-                backgroundColor: RelunaTheme.accentColor.withValues(alpha: 0.2),
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
                 child: Text(
                   member.$1[0],
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: RelunaTheme.accentColor,
+                    color: theme.colorScheme.primary,
                   ),
                 ),
               ),
               title: Text(member.$1),
-              trailing: const Icon(
+              trailing: Icon(
                 Icons.chevron_right,
-                color: RelunaTheme.textSecondary,
+                color: theme.colorScheme.mutedForeground,
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -224,17 +199,17 @@ class _ChatConversation {
 
 class _ChatListItem extends StatelessWidget {
   final _ChatConversation conversation;
-  final bool isIOS;
   final VoidCallback? onTap;
 
   const _ChatListItem({
     required this.conversation,
-    required this.isIOS,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -247,44 +222,37 @@ class _ChatListItem extends StatelessWidget {
                     width: 52,
                     height: 52,
                     decoration: BoxDecoration(
-                      color: RelunaTheme.accentColor.withValues(alpha: 0.1),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Icon(
-                      isIOS ? CupertinoIcons.person_3_fill : Icons.group,
-                      color: RelunaTheme.accentColor,
+                      Icons.group,
+                      color: theme.colorScheme.primary,
                       size: 24,
                     ),
                   )
-                : CircleAvatar(
-                    radius: 26,
-                    backgroundColor: RelunaTheme.accentColor.withValues(alpha: 0.1),
-                    child: conversation.avatar != null
-                        ? ClipOval(
-                            child: Image.network(
-                              conversation.avatar!,
-                              width: 52,
-                              height: 52,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Text(
-                                conversation.name[0].toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: RelunaTheme.accentColor,
-                                ),
-                              ),
-                            ),
-                          )
-                        : Text(
-                            conversation.name[0].toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: RelunaTheme.accentColor,
-                            ),
+                : conversation.avatar != null
+                    ? ShadAvatar(
+                        conversation.avatar!,
+                        size: const Size(52, 52),
+                      )
+                    : Container(
+                        width: 52,
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          conversation.name[0].toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
                           ),
-                  ),
+                        ),
+                      ),
             const SizedBox(width: 12),
             
             // Content
@@ -302,7 +270,7 @@ class _ChatListItem extends StatelessWidget {
                             fontWeight: conversation.unread > 0
                                 ? FontWeight.w600
                                 : FontWeight.w500,
-                            color: RelunaTheme.textPrimary,
+                            color: theme.colorScheme.foreground,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -313,8 +281,8 @@ class _ChatListItem extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13,
                           color: conversation.unread > 0
-                              ? RelunaTheme.accentColor
-                              : RelunaTheme.textTertiary,
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.mutedForeground,
                         ),
                       ),
                     ],
@@ -328,8 +296,8 @@ class _ChatListItem extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             color: conversation.unread > 0
-                                ? RelunaTheme.textPrimary
-                                : RelunaTheme.textSecondary,
+                                ? theme.colorScheme.foreground
+                                : theme.colorScheme.mutedForeground,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -342,15 +310,15 @@ class _ChatListItem extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: RelunaTheme.accentColor,
+                            color: theme.colorScheme.primary,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
                             '${conversation.unread}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                              color: theme.colorScheme.primaryForeground,
                             ),
                           ),
                         ),

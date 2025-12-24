@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../core/providers/providers.dart';
 import '../../../data/models/models.dart';
 
@@ -21,12 +21,12 @@ class MeetingDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final meetingAsync = ref.watch(meetingByIdProvider(meetingId));
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
     return meetingAsync.when(
       data: (meeting) {
         if (meeting == null) {
-          return AdaptiveScaffold(
+          return AppScaffold(
             title: 'Meeting',
             hasBackButton: true,
             body: const Center(child: Text('Meeting not found')),
@@ -35,12 +35,12 @@ class MeetingDetailScreen extends ConsumerWidget {
 
         final isPast = meeting.date.isBefore(DateTime.now());
 
-        return AdaptiveScaffold(
+        return AppScaffold(
           title: 'Meeting Details',
           hasBackButton: true,
           actions: [
-            AdaptiveIconButton(
-              icon: isIOS ? CupertinoIcons.share : Icons.share_outlined,
+            IconButton(
+              icon: const Icon(Icons.share_outlined),
               onPressed: () {
                 _showShareOptions(context, meeting);
               },
@@ -132,24 +132,24 @@ class MeetingDetailScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Date, time, location
-                      AdaptiveCard(
+                      AppCard(
                         child: Column(
                           children: [
                             _InfoRow(
-                              icon: isIOS ? CupertinoIcons.calendar : Icons.calendar_today_outlined,
+                              icon: Icons.calendar_today_outlined,
                               label: 'Date',
                               value: DateFormat('EEEE, MMMM d, y').format(meeting.date),
                             ),
                             const Divider(height: 24),
                             _InfoRow(
-                              icon: isIOS ? CupertinoIcons.clock : Icons.access_time,
+                              icon: Icons.access_time,
                               label: 'Time',
                               value: meeting.time,
                             ),
                             if (meeting.location != null) ...[
                               const Divider(height: 24),
                               _InfoRow(
-                                icon: isIOS ? CupertinoIcons.location : Icons.location_on_outlined,
+                                icon: Icons.location_on_outlined,
                                 label: 'Location',
                                 value: meeting.location!,
                               ),
@@ -169,7 +169,7 @@ class MeetingDetailScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      AdaptiveCard(
+                      AppCard(
                         padding: EdgeInsets.zero,
                         child: Column(
                           children: meeting.attendees.asMap().entries.map((entry) {
@@ -217,7 +217,7 @@ class MeetingDetailScreen extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        AdaptiveCard(
+                        AppCard(
                           padding: EdgeInsets.zero,
                           child: Column(
                             children: meeting.documents.asMap().entries.map((entry) {
@@ -241,41 +241,63 @@ class MeetingDetailScreen extends ConsumerWidget {
                         Row(
                           children: [
                             Expanded(
-                              child: AdaptiveButton(
-                                text: 'RSVP',
+                              child: ShadButton(
+                                child: const Text('RSVP'),
                                 onPressed: () {
-                                  AdaptiveActionSheet.show(
+                                  showModalBottomSheet(
                                     context: context,
-                                    title: 'RSVP',
-                                    message: 'Will you attend this meeting?',
-                                    actions: [
-                                      AdaptiveAction(
-                                        title: 'Yes, I\'ll attend',
-                                        icon: Icons.check_circle_outline,
-                                        onPressed: () {
-                                          AdaptiveDialog.show(
-                                            context: context,
-                                            title: 'RSVP Confirmed',
-                                            content: 'You have confirmed attendance.',
-                                            confirmText: 'OK',
-                                          );
-                                        },
+                                    builder: (context) => Container(
+                                      padding: const EdgeInsets.all(24),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        children: [
+                                          const Text(
+                                            'RSVP',
+                                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          const Text('Will you attend this meeting?'),
+                                          const SizedBox(height: 24),
+                                          ShadButton(
+                                            icon: const Icon(Icons.check_circle_outline),
+                                            child: const Text('Yes, I\'ll attend'),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              showShadDialog(
+                                                context: context,
+                                                builder: (context) => ShadDialog.alert(
+                                                  title: const Text('RSVP Confirmed'),
+                                                  description: const Text('You have confirmed attendance.'),
+                                                  actions: [
+                                                    ShadButton(
+                                                      child: const Text('OK'),
+                                                      onPressed: () => Navigator.pop(context),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                          const SizedBox(height: 8),
+                                          ShadButton.destructive(
+                                            icon: const Icon(Icons.cancel_outlined),
+                                            child: const Text('No, I can\'t attend'),
+                                            onPressed: () => Navigator.pop(context),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          ShadButton.outline(
+                                            icon: const Icon(Icons.help_outline),
+                                            child: const Text('Maybe'),
+                                            onPressed: () => Navigator.pop(context),
+                                          ),
+                                          const SizedBox(height: 16),
+                                          ShadButton.ghost(
+                                            child: const Text('Cancel'),
+                                            onPressed: () => Navigator.pop(context),
+                                          ),
+                                        ],
                                       ),
-                                      AdaptiveAction(
-                                        title: 'No, I can\'t attend',
-                                        icon: Icons.cancel_outlined,
-                                        isDestructive: true,
-                                        onPressed: () {},
-                                      ),
-                                      AdaptiveAction(
-                                        title: 'Maybe',
-                                        icon: Icons.help_outline,
-                                        onPressed: () {},
-                                      ),
-                                    ],
-                                    cancelAction: AdaptiveAction(
-                                      title: 'Cancel',
-                                      onPressed: () {},
                                     ),
                                   );
                                 },
@@ -283,15 +305,21 @@ class MeetingDetailScreen extends ConsumerWidget {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: AdaptiveButton(
-                                text: 'Add to Calendar',
-                                isOutlined: true,
+                              child: ShadButton.outline(
+                                child: const Text('Add to Calendar'),
                                 onPressed: () {
-                                  AdaptiveDialog.show(
+                                  showShadDialog(
                                     context: context,
-                                    title: 'Added to Calendar',
-                                    content: 'Meeting has been added to your calendar.',
-                                    confirmText: 'OK',
+                                    builder: (context) => ShadDialog.alert(
+                                      title: const Text('Added to Calendar'),
+                                      description: const Text('Meeting has been added to your calendar.'),
+                                      actions: [
+                                        ShadButton(
+                                          child: const Text('OK'),
+                                          onPressed: () => Navigator.pop(context),
+                                        ),
+                                      ],
+                                    ),
                                   );
                                 },
                               ),
@@ -307,12 +335,12 @@ class MeetingDetailScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const AdaptiveScaffold(
+      loading: () => const AppScaffold(
         title: 'Loading...',
         hasBackButton: true,
-        body: Center(child: AdaptiveLoadingIndicator()),
+        body: Center(child: AppLoadingIndicator()),
       ),
-      error: (_, __) => AdaptiveScaffold(
+      error: (_, __) => AppScaffold(
         title: 'Error',
         hasBackButton: true,
         body: const Center(child: Text('Failed to load meeting')),
@@ -321,54 +349,111 @@ class MeetingDetailScreen extends ConsumerWidget {
   }
 
   void _showShareOptions(BuildContext context, Meeting meeting) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
     final dateFormat = DateFormat('EEEE, MMMM d, yyyy');
     final timeFormat = DateFormat('h:mm a');
     
-    AdaptiveActionSheet.show(
+    showModalBottomSheet(
       context: context,
-      title: 'Share Meeting',
-      actions: [
-        AdaptiveAction(
-          title: 'Copy Meeting Link',
-          icon: isIOS ? CupertinoIcons.link : Icons.link,
-          onPressed: () {
-            AdaptiveDialog.show(
-              context: context,
-              title: 'Link Copied',
-              content: 'Meeting link has been copied to clipboard.',
-              confirmText: 'OK',
-            );
-          },
+      builder: (sheetContext) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Share Meeting',
+              style: ShadTheme.of(context).textTheme.h4,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ShadButton.outline(
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.link, size: 18),
+                  SizedBox(width: 8),
+                  Text('Copy Meeting Link'),
+                ],
+              ),
+              onPressed: () {
+                Navigator.pop(sheetContext);
+                showShadDialog(
+                  context: context,
+                  builder: (context) => ShadDialog.alert(
+                    title: const Text('Link Copied'),
+                    description: const Text('Meeting link has been copied to clipboard.'),
+                    actions: [
+                      ShadButton(
+                        child: const Text('OK'),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            ShadButton.outline(
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.email_outlined, size: 18),
+                  SizedBox(width: 8),
+                  Text('Share via Email'),
+                ],
+              ),
+              onPressed: () {
+                Navigator.pop(sheetContext);
+                showShadDialog(
+                  context: context,
+                  builder: (dialogContext) => ShadDialog.alert(
+                    title: const Text('Email Prepared'),
+                    description: Text('Meeting details ready to share via email:\n\n${meeting.title}\n${dateFormat.format(meeting.date)} at ${timeFormat.format(meeting.date)}'),
+                    actions: [
+                      ShadButton(
+                        child: const Text('OK'),
+                        onPressed: () => Navigator.pop(dialogContext),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            ShadButton.outline(
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.chat_outlined, size: 18),
+                  SizedBox(width: 8),
+                  Text('Send to Family Chat'),
+                ],
+              ),
+              onPressed: () {
+                Navigator.pop(sheetContext);
+                showShadDialog(
+                  context: context,
+                  builder: (context) => ShadDialog.alert(
+                    title: const Text('Shared'),
+                    description: const Text('Meeting details have been shared to Family Chat.'),
+                    actions: [
+                      ShadButton(
+                        child: const Text('OK'),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            ShadButton.ghost(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(sheetContext),
+            ),
+          ],
         ),
-        AdaptiveAction(
-          title: 'Share via Email',
-          icon: isIOS ? CupertinoIcons.mail : Icons.email_outlined,
-          onPressed: () {
-            AdaptiveDialog.show(
-              context: context,
-              title: 'Email Prepared',
-              content: 'Meeting details ready to share via email:\n\n${meeting.title}\n${dateFormat.format(meeting.date)} at ${timeFormat.format(meeting.date)}',
-              confirmText: 'OK',
-            );
-          },
-        ),
-        AdaptiveAction(
-          title: 'Send to Family Chat',
-          icon: isIOS ? CupertinoIcons.chat_bubble : Icons.chat_outlined,
-          onPressed: () {
-            AdaptiveDialog.show(
-              context: context,
-              title: 'Shared',
-              content: 'Meeting details have been shared to Family Chat.',
-              confirmText: 'OK',
-            );
-          },
-        ),
-      ],
-      cancelAction: AdaptiveAction(
-        title: 'Cancel',
-        onPressed: () {},
       ),
     );
   }

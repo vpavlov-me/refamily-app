@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/router/app_router.dart';
 
@@ -21,12 +21,12 @@ class MemberProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final memberAsync = ref.watch(memberByIdProvider(memberId));
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
     return memberAsync.when(
       data: (member) {
         if (member == null) {
-          return AdaptiveScaffold(
+          return AppScaffold(
             title: 'Member',
             hasBackButton: true,
             body: Center(
@@ -34,7 +34,7 @@ class MemberProfileScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    isIOS ? CupertinoIcons.person : Icons.person_outline,
+                    Icons.person_outline,
                     size: 64,
                     color: RelunaTheme.textTertiary,
                   ),
@@ -55,42 +55,76 @@ class MemberProfileScreen extends ConsumerWidget {
 
         final roleColor = RelunaTheme.getRoleColor(member.role);
 
-        return AdaptiveScaffold(
+        return AppScaffold(
           title: member.name,
           hasBackButton: true,
           actions: [
-            AdaptiveIconButton(
-              icon: isIOS ? CupertinoIcons.ellipsis_vertical : Icons.more_vert,
+            IconButton(
+              icon: const Icon(Icons.more_vert),
               onPressed: () {
-                AdaptiveActionSheet.show(
+                showModalBottomSheet(
                   context: context,
-                  title: 'Actions',
-                  actions: [
-                    AdaptiveAction(
-                      title: 'Send Message',
-                      icon: isIOS ? CupertinoIcons.chat_bubble : Icons.chat_outlined,
-                      onPressed: () {
-                        context.router.push(ChatDetailRoute(
-                          chatId: 'member_${member.id}',
-                          chatName: member.name,
-                          isGroup: false,
-                        ));
-                      },
+                  builder: (sheetContext) => Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Actions',
+                          style: ShadTheme.of(context).textTheme.h4,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ShadButton.outline(
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.chat_outlined, size: 18),
+                              SizedBox(width: 8),
+                              Text('Send Message'),
+                            ],
+                          ),
+                          onPressed: () {
+                            Navigator.pop(sheetContext);
+                            context.router.push(ChatDetailRoute(
+                              chatId: 'member_${member.id}',
+                              chatName: member.name,
+                              isGroup: false,
+                            ));
+                          },
+                        ),
+                        const SizedBox(height: 8),
+                        ShadButton.outline(
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.phone_outlined, size: 18),
+                              SizedBox(width: 8),
+                              Text('Call'),
+                            ],
+                          ),
+                          onPressed: () => Navigator.pop(sheetContext),
+                        ),
+                        const SizedBox(height: 8),
+                        ShadButton.outline(
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.email_outlined, size: 18),
+                              SizedBox(width: 8),
+                              Text('Email'),
+                            ],
+                          ),
+                          onPressed: () => Navigator.pop(sheetContext),
+                        ),
+                        const SizedBox(height: 8),
+                        ShadButton.ghost(
+                          child: const Text('Cancel'),
+                          onPressed: () => Navigator.pop(sheetContext),
+                        ),
+                      ],
                     ),
-                    AdaptiveAction(
-                      title: 'Call',
-                      icon: isIOS ? CupertinoIcons.phone : Icons.phone_outlined,
-                      onPressed: () {},
-                    ),
-                    AdaptiveAction(
-                      title: 'Email',
-                      icon: isIOS ? CupertinoIcons.mail : Icons.email_outlined,
-                      onPressed: () {},
-                    ),
-                  ],
-                  cancelAction: AdaptiveAction(
-                    title: 'Cancel',
-                    onPressed: () {},
                   ),
                 );
               },
@@ -235,21 +269,21 @@ class MemberProfileScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      AdaptiveCard(
+                      AppCard(
                         padding: EdgeInsets.zero,
                         margin: EdgeInsets.zero,
                         child: Column(
                           children: [
                             if (member.email != null)
                               _ContactRow(
-                                icon: isIOS ? CupertinoIcons.mail : Icons.email_outlined,
+                                icon: Icons.email_outlined,
                                 label: 'Email',
                                 value: member.email!,
                               ),
                             if (member.phone != null) ...[
                               const Divider(height: 1, indent: 56),
                               _ContactRow(
-                                icon: isIOS ? CupertinoIcons.phone : Icons.phone_outlined,
+                                icon: Icons.phone_outlined,
                                 label: 'Phone',
                                 value: member.phone!,
                               ),
@@ -268,7 +302,7 @@ class MemberProfileScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      AdaptiveCard(
+                      AppCard(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -353,7 +387,7 @@ class MemberProfileScreen extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        AdaptiveCard(
+                        AppCard(
                           padding: EdgeInsets.zero,
                           child: Column(
                             children: member.committees!.asMap().entries.map((entry) {
@@ -403,12 +437,12 @@ class MemberProfileScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const AdaptiveScaffold(
+      loading: () => const AppScaffold(
         title: 'Loading...',
         hasBackButton: true,
-        body: Center(child: AdaptiveLoadingIndicator()),
+        body: Center(child: AppLoadingIndicator()),
       ),
-      error: (_, __) => AdaptiveScaffold(
+      error: (_, __) => AppScaffold(
         title: 'Error',
         hasBackButton: true,
         body: const Center(child: Text('Failed to load member')),

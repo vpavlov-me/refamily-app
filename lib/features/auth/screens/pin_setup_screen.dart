@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/router/app_router.dart';
 
@@ -96,10 +96,11 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     final currentPin = _isConfirmStep ? _confirmPin : _pin;
     
     return Scaffold(
-      backgroundColor: RelunaTheme.backgroundLight,
+      backgroundColor: theme.colorScheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -112,13 +113,13 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: RelunaTheme.accentColor.withValues(alpha: 0.1),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.lock_outline,
                   size: 40,
-                  color: RelunaTheme.accentColor,
+                  color: theme.colorScheme.primary,
                 ),
               ),
               
@@ -126,10 +127,10 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
               
               Text(
                 _isConfirmStep ? 'Confirm Your PIN' : 'Create PIN',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: RelunaTheme.textPrimary,
+                  color: theme.colorScheme.foreground,
                 ),
               ),
               
@@ -140,9 +141,9 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
                     ? 'Enter your PIN again to confirm'
                     : 'Create a 4-digit PIN for quick access',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
-                  color: RelunaTheme.textSecondary,
+                  color: theme.colorScheme.mutedForeground,
                 ),
               ),
               
@@ -160,12 +161,12 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isFilled 
-                          ? RelunaTheme.accentColor 
+                          ? theme.colorScheme.primary 
                           : Colors.transparent,
                       border: Border.all(
                         color: isFilled 
-                            ? RelunaTheme.accentColor 
-                            : RelunaTheme.divider,
+                            ? theme.colorScheme.primary 
+                            : theme.colorScheme.border,
                         width: 2,
                       ),
                     ),
@@ -177,8 +178,8 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
                 const SizedBox(height: 16),
                 Text(
                   _errorMessage,
-                  style: const TextStyle(
-                    color: RelunaTheme.error,
+                  style: TextStyle(
+                    color: theme.colorScheme.destructive,
                     fontSize: 14,
                   ),
                 ),
@@ -187,16 +188,16 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
               const SizedBox(height: 60),
               
               // Keypad
-              _buildKeypad(),
+              _buildKeypad(theme),
               
               const SizedBox(height: 24),
               
               if (_isConfirmStep)
-                TextButton(
+                ShadButton.ghost(
                   onPressed: _reset,
-                  child: const Text(
+                  child: Text(
                     'Start Over',
-                    style: TextStyle(color: RelunaTheme.textSecondary),
+                    style: TextStyle(color: theme.colorScheme.mutedForeground),
                   ),
                 ),
               
@@ -208,37 +209,37 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
     );
   }
 
-  Widget _buildKeypad() {
+  Widget _buildKeypad(ShadThemeData theme) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: ['1', '2', '3'].map((key) => _buildKey(key)).toList(),
+          children: ['1', '2', '3'].map((key) => _buildKey(key, theme)).toList(),
         ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: ['4', '5', '6'].map((key) => _buildKey(key)).toList(),
+          children: ['4', '5', '6'].map((key) => _buildKey(key, theme)).toList(),
         ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: ['7', '8', '9'].map((key) => _buildKey(key)).toList(),
+          children: ['7', '8', '9'].map((key) => _buildKey(key, theme)).toList(),
         ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const SizedBox(width: 80), // Empty space
-            _buildKey('0'),
-            _buildDeleteKey(),
+            const SizedBox(width: 80),
+            _buildKey('0', theme),
+            _buildDeleteKey(theme),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildKey(String key) {
+  Widget _buildKey(String key, ShadThemeData theme) {
     return SizedBox(
       width: 80,
       height: 80,
@@ -250,16 +251,16 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: RelunaTheme.surfaceLight,
-              border: Border.all(color: RelunaTheme.divider),
+              color: theme.colorScheme.card,
+              border: Border.all(color: theme.colorScheme.border),
             ),
             child: Center(
               child: Text(
                 key,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w500,
-                  color: RelunaTheme.textPrimary,
+                  color: theme.colorScheme.foreground,
                 ),
               ),
             ),
@@ -269,7 +270,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
     );
   }
 
-  Widget _buildDeleteKey() {
+  Widget _buildDeleteKey(ShadThemeData theme) {
     return SizedBox(
       width: 80,
       height: 80,
@@ -278,11 +279,11 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         child: InkWell(
           onTap: _onDelete,
           borderRadius: BorderRadius.circular(40),
-          child: const Center(
+          child: Center(
             child: Icon(
               Icons.backspace_outlined,
               size: 28,
-              color: RelunaTheme.textSecondary,
+              color: theme.colorScheme.mutedForeground,
             ),
           ),
         ),

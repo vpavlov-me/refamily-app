@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/reluna_theme.dart';
-import '../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../core/providers/providers.dart';
 import '../../core/router/app_router.dart';
 
@@ -18,6 +16,7 @@ class MainShellScreen extends ConsumerStatefulWidget {
 class _MainShellScreenState extends ConsumerState<MainShellScreen> {
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     final notificationsSummary = ref.watch(notificationsSummaryProvider);
 
     return AutoTabsScaffold(
@@ -31,8 +30,9 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen> {
         return BottomNavigationBar(
           currentIndex: tabsRouter.activeIndex,
           onTap: tabsRouter.setActiveIndex,
-          selectedItemColor: RelunaTheme.accentColor,
-          unselectedItemColor: RelunaTheme.textSecondary,
+          selectedItemColor: theme.colorScheme.primary,
+          unselectedItemColor: theme.colorScheme.mutedForeground,
+          backgroundColor: theme.colorScheme.card,
           type: BottomNavigationBarType.fixed,
           items: [
             const BottomNavigationBarItem(

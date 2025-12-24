@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../data/models/succession.dart';
 
 // Mock data providers
@@ -130,14 +130,14 @@ class _SuccessionScreenState extends ConsumerState<SuccessionScreen> {
   Widget build(BuildContext context) {
     final plans = ref.watch(successionPlansProvider);
     final summary = ref.watch(successionSummaryProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Succession Planning',
       hasBackButton: true,
       actions: [
-        AdaptiveIconButton(
-          icon: isIOS ? CupertinoIcons.add : Icons.add,
+        IconButton(
+          icon: const Icon(Icons.add),
           onPressed: () => _showCreatePlanDialog(context),
         ),
       ],
@@ -266,15 +266,25 @@ class _SuccessionScreenState extends ConsumerState<SuccessionScreen> {
   }
 
   void _showCreatePlanDialog(BuildContext context) {
-    AdaptiveDialog.show(
+    showShadDialog(
       context: context,
-      title: 'Create Succession Plan',
-      content: 'Define a new succession plan for a family role or position.',
-      confirmText: 'Create',
-      cancelText: 'Cancel',
-      onConfirm: () {
-        // Create plan logic would go here
-      },
+      builder: (context) => ShadDialog.alert(
+        title: const Text('Create Succession Plan'),
+        description: const Text('Define a new succession plan for a family role or position.'),
+        actions: [
+          ShadButton.outline(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ShadButton(
+            child: const Text('Create'),
+            onPressed: () {
+              Navigator.pop(context);
+              // Create plan logic would go here
+            },
+          ),
+        ],
+      ),
     );
   }
 

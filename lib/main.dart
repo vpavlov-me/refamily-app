@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/theme/reluna_theme.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import 'core/theme/theme.dart';
 import 'core/router/app_router.dart';
 import 'features/settings/providers/settings_provider.dart';
 
@@ -33,22 +34,25 @@ class RelunaFamilyApp extends ConsumerWidget {
     final appRouter = ref.watch(appRouterProvider);
     final settings = ref.watch(settingsProvider);
 
-    return MaterialApp.router(
+    return ShadApp.router(
       title: 'Reluna Family',
       debugShowCheckedModeBanner: false,
-      theme: RelunaTheme.materialTheme(),
-      darkTheme: RelunaTheme.materialDarkTheme(),
+      theme: RelunaTheme.lightTheme(),
+      darkTheme: RelunaTheme.darkTheme(),
       themeMode: settings.themeMode,
       routerConfig: appRouter.config(),
       builder: (context, child) {
-        // Apply text scale factor limits for accessibility
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(
-              MediaQuery.of(context).textScaler.scale(1.0).clamp(0.8, 1.3),
+        // Apply iOS-compliant text scale for better readability
+        // iOS minimum recommended: 17pt for body text
+        return ShadToaster(
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(
+                (MediaQuery.of(context).textScaler.scale(1.0) * 1.15).clamp(1.0, 1.5),
+              ),
             ),
+            child: child!,
           ),
-          child: child!,
         );
       },
     );

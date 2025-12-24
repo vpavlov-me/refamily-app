@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../core/providers/providers.dart';
 import '../../../data/models/models.dart';
 import '../../../core/router/app_router.dart';
@@ -34,17 +34,17 @@ class _DecisionsScreenState extends ConsumerState<DecisionsScreen> with SingleTi
   }
 
   @override
-  Widget build(BuildContext context, ) {
+  Widget build(BuildContext context) {
     final decisions = ref.watch(decisionsProvider);
     final decisionsSummary = ref.watch(decisionsSummaryProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    final theme = ShadTheme.of(context);
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Decisions',
       hasBackButton: true,
       actions: [
-        AdaptiveIconButton(
-          icon: isIOS ? CupertinoIcons.add : Icons.add,
+        IconButton(
+          icon: const Icon(Icons.add),
           onPressed: () => context.router.push(const DecisionCreateRoute()),
         ),
       ],
@@ -61,7 +61,7 @@ class _DecisionsScreenState extends ConsumerState<DecisionsScreen> with SingleTi
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      RelunaTheme.accentColor.withValues(alpha: 0.1),
+                      theme.colorScheme.primary.withValues(alpha: 0.1),
                       RelunaTheme.info.withValues(alpha: 0.05),
                     ],
                   ),
@@ -73,7 +73,7 @@ class _DecisionsScreenState extends ConsumerState<DecisionsScreen> with SingleTi
                     _SummaryItem(
                       label: 'Voting',
                       value: '${summary.voting}',
-                      color: RelunaTheme.accentColor,
+                      color: theme.colorScheme.primary,
                     ),
                     _SummaryItem(
                       label: 'Pending',
@@ -101,8 +101,9 @@ class _DecisionsScreenState extends ConsumerState<DecisionsScreen> with SingleTi
           // Search
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: AdaptiveSearchField(
-              placeholder: 'Search decisions...',
+            child: ShadInput(
+              placeholder: const Text('Search decisions...'),
+              prefix: const Icon(Icons.search, size: 20),
               onChanged: (value) => setState(() => _searchQuery = value),
             ),
           ),
@@ -112,18 +113,18 @@ class _DecisionsScreenState extends ConsumerState<DecisionsScreen> with SingleTi
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: RelunaTheme.surfaceDark,
+              color: theme.colorScheme.muted,
               borderRadius: BorderRadius.circular(10),
             ),
             child: TabBar(
               controller: _tabController,
               indicator: BoxDecoration(
-                color: RelunaTheme.accentColor,
+                color: theme.colorScheme.primary,
                 borderRadius: BorderRadius.circular(8),
               ),
               indicatorSize: TabBarIndicatorSize.tab,
-              labelColor: Colors.white,
-              unselectedLabelColor: RelunaTheme.textSecondary,
+              labelColor: theme.colorScheme.primaryForeground,
+              unselectedLabelColor: theme.colorScheme.mutedForeground,
               labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
               dividerColor: Colors.transparent,
               padding: const EdgeInsets.all(4),
@@ -163,7 +164,7 @@ class _DecisionsScreenState extends ConsumerState<DecisionsScreen> with SingleTi
                   ],
                 );
               },
-              loading: () => const Center(child: AdaptiveLoadingIndicator()),
+              loading: () => const Center(child: AppLoadingIndicator()),
               error: (_, __) => const Center(child: Text('Failed to load decisions')),
             ),
           ),
@@ -195,6 +196,8 @@ class _SummaryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
     return Column(
       children: [
         Text(
@@ -208,10 +211,7 @@ class _SummaryItem extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: RelunaTheme.textSecondary,
-          ),
+          style: theme.textTheme.small,
         ),
       ],
     );
@@ -229,29 +229,11 @@ class _DecisionsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
-
     if (decisions.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              isIOS ? CupertinoIcons.doc_text : Icons.how_to_vote_outlined,
-              size: 64,
-              color: RelunaTheme.textTertiary,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'No decisions found',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: RelunaTheme.textSecondary,
-              ),
-            ),
-          ],
-        ),
+      return const EmptyState(
+        icon: Icons.how_to_vote_outlined,
+        title: 'No decisions found',
+        subtitle: 'Create a new decision to get started',
       );
     }
 
@@ -310,6 +292,7 @@ class _DecisionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     final totalVotes = decision.votesFor + decision.votesAgainst + decision.votesAbstain;
     final hasVotes = totalVotes > 0;
 
@@ -319,12 +302,12 @@ class _DecisionCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: RelunaTheme.surfaceLight,
+          color: theme.colorScheme.card,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: decision.status == 'Voting'
-                ? RelunaTheme.accentColor.withValues(alpha: 0.3)
-                : RelunaTheme.divider,
+                ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                : theme.colorScheme.border,
           ),
         ),
         child: Column(
@@ -363,7 +346,7 @@ class _DecisionCard extends StatelessWidget {
                       fontSize: 12,
                       color: decision.deadline!.isBefore(DateTime.now())
                           ? RelunaTheme.error
-                          : RelunaTheme.textTertiary,
+                          : theme.colorScheme.mutedForeground,
                     ),
                   ),
               ],
@@ -373,10 +356,10 @@ class _DecisionCard extends StatelessWidget {
             // Title and description
             Text(
               decision.title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: RelunaTheme.textPrimary,
+                color: theme.colorScheme.foreground,
               ),
             ),
             const SizedBox(height: 6),
@@ -384,9 +367,9 @@ class _DecisionCard extends StatelessWidget {
               decision.description.length > 100
                   ? '${decision.description.substring(0, 100)}...'
                   : decision.description,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: RelunaTheme.textSecondary,
+                color: theme.colorScheme.mutedForeground,
                 height: 1.4,
               ),
             ),
@@ -405,17 +388,14 @@ class _DecisionCard extends StatelessWidget {
                           children: [
                             Text(
                               '$totalVotes of ${decision.requiredVotes} votes',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: RelunaTheme.textSecondary,
-                              ),
+                              style: theme.textTheme.small,
                             ),
                             Text(
                               '${((totalVotes / decision.requiredVotes) * 100).toInt()}%',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: RelunaTheme.textPrimary,
+                                color: theme.colorScheme.foreground,
                               ),
                             ),
                           ],
@@ -425,8 +405,8 @@ class _DecisionCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(4),
                           child: LinearProgressIndicator(
                             value: totalVotes / decision.requiredVotes,
-                            backgroundColor: RelunaTheme.surfaceDark,
-                            valueColor: const AlwaysStoppedAnimation(RelunaTheme.accentColor),
+                            backgroundColor: theme.colorScheme.muted,
+                            valueColor: AlwaysStoppedAnimation(theme.colorScheme.primary),
                             minHeight: 6,
                           ),
                         ),
@@ -463,24 +443,21 @@ class _DecisionCard extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.person_outline,
                   size: 14,
-                  color: RelunaTheme.textTertiary,
+                  color: theme.colorScheme.mutedForeground,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   decision.createdBy,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: RelunaTheme.textTertiary,
-                  ),
+                  style: theme.textTheme.small,
                 ),
                 const Spacer(),
-                const Icon(
+                Icon(
                   Icons.chevron_right,
                   size: 20,
-                  color: RelunaTheme.textTertiary,
+                  color: theme.colorScheme.mutedForeground,
                 ),
               ],
             ),
@@ -504,6 +481,8 @@ class _VoteIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
     return Row(
       children: [
         Container(
@@ -517,10 +496,7 @@ class _VoteIndicator extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           '$count $label',
-          style: const TextStyle(
-            fontSize: 12,
-            color: RelunaTheme.textSecondary,
-          ),
+          style: theme.textTheme.small,
         ),
       ],
     );

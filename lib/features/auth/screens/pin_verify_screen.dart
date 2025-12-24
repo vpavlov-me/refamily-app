@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/router/app_router.dart';
 
@@ -89,35 +88,36 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
   }
 
   Future<void> _useBiometric() async {
-    // Mock biometric authentication
     HapticFeedback.lightImpact();
-    
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
     
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(isIOS ? 'Face ID' : 'Fingerprint'),
-        content: const Text('Biometric authentication is a mock feature.\nTap Confirm to simulate success.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await ref.read(authStateProvider.notifier).verifyPin(
-                ref.read(pinManagerProvider).getPin()!,
-              );
-              if (mounted) {
-                context.router.replace(const MainShellRoute());
-              }
-            },
-            child: const Text('Confirm'),
-          ),
-        ],
-      ),
+      builder: (context) {
+        final theme = ShadTheme.of(context);
+        return AlertDialog(
+          backgroundColor: theme.colorScheme.card,
+          title: const Text('Biometric Authentication'),
+          content: const Text('Biometric authentication is a mock feature.\nTap Confirm to simulate success.'),
+          actions: [
+            ShadButton.ghost(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ShadButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                await ref.read(authStateProvider.notifier).verifyPin(
+                  ref.read(pinManagerProvider).getPin()!,
+                );
+                if (mounted) {
+                  context.router.replace(const MainShellRoute());
+                }
+              },
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -130,12 +130,12 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     final authState = ref.watch(authStateProvider);
     final isBiometricEnabled = ref.read(authStateProvider.notifier).isBiometricEnabled();
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
     
     return Scaffold(
-      backgroundColor: RelunaTheme.backgroundLight,
+      backgroundColor: theme.colorScheme.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -144,28 +144,14 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
               const SizedBox(height: 60),
               
               // Avatar
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: RelunaTheme.accentColor.withValues(alpha: 0.1),
-                child: authState.currentUser?.avatar != null
-                    ? ClipOval(
-                        child: Image.network(
-                          authState.currentUser!.avatar!,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(
-                            Icons.person,
-                            size: 40,
-                            color: RelunaTheme.accentColor,
-                          ),
-                        ),
-                      )
-                    : const Icon(
-                        Icons.person,
-                        size: 40,
-                        color: RelunaTheme.accentColor,
-                      ),
+              ShadAvatar(
+                authState.currentUser?.avatar ?? 'placeholder',
+                size: const Size(80, 80),
+                placeholder: Icon(
+                  Icons.person,
+                  size: 40,
+                  color: theme.colorScheme.primary,
+                ),
               ),
               
               const SizedBox(height: 16),
@@ -174,7 +160,7 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
                 'Welcome back,',
                 style: TextStyle(
                   fontSize: 16,
-                  color: RelunaTheme.textSecondary,
+                  color: theme.colorScheme.mutedForeground,
                 ),
               ),
               
@@ -182,20 +168,20 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
               
               Text(
                 authState.currentUser?.fullName ?? 'User',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: RelunaTheme.textPrimary,
+                  color: theme.colorScheme.foreground,
                 ),
               ),
               
               const SizedBox(height: 8),
               
-              const Text(
+              Text(
                 'Enter your PIN to continue',
                 style: TextStyle(
                   fontSize: 15,
-                  color: RelunaTheme.textSecondary,
+                  color: theme.colorScheme.mutedForeground,
                 ),
               ),
               
@@ -223,12 +209,12 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: isFilled 
-                            ? (_errorMessage.isNotEmpty ? RelunaTheme.error : RelunaTheme.accentColor)
+                            ? (_errorMessage.isNotEmpty ? theme.colorScheme.destructive : theme.colorScheme.primary)
                             : Colors.transparent,
                         border: Border.all(
                           color: isFilled 
-                              ? (_errorMessage.isNotEmpty ? RelunaTheme.error : RelunaTheme.accentColor)
-                              : RelunaTheme.divider,
+                              ? (_errorMessage.isNotEmpty ? theme.colorScheme.destructive : theme.colorScheme.primary)
+                              : theme.colorScheme.border,
                           width: 2,
                         ),
                       ),
@@ -241,8 +227,8 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
                 const SizedBox(height: 16),
                 Text(
                   _errorMessage,
-                  style: const TextStyle(
-                    color: RelunaTheme.error,
+                  style: TextStyle(
+                    color: theme.colorScheme.destructive,
                     fontSize: 14,
                   ),
                 ),
@@ -251,7 +237,7 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
               const Spacer(),
               
               // Keypad
-              _buildKeypad(),
+              _buildKeypad(theme),
               
               const SizedBox(height: 24),
               
@@ -260,22 +246,28 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   if (isBiometricEnabled)
-                    TextButton.icon(
+                    ShadButton.ghost(
                       onPressed: _useBiometric,
-                      icon: Icon(
-                        isIOS ? CupertinoIcons.viewfinder : Icons.fingerprint,
-                        color: RelunaTheme.accentColor,
-                      ),
-                      label: Text(
-                        isIOS ? 'Use Face ID' : 'Use Fingerprint',
-                        style: const TextStyle(color: RelunaTheme.accentColor),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.fingerprint,
+                            color: theme.colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Use Biometric',
+                            style: TextStyle(color: theme.colorScheme.primary),
+                          ),
+                        ],
                       ),
                     ),
-                  TextButton(
+                  ShadButton.ghost(
                     onPressed: _logout,
-                    child: const Text(
+                    child: Text(
                       'Sign Out',
-                      style: TextStyle(color: RelunaTheme.textSecondary),
+                      style: TextStyle(color: theme.colorScheme.mutedForeground),
                     ),
                   ),
                 ],
@@ -289,37 +281,37 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
     );
   }
 
-  Widget _buildKeypad() {
+  Widget _buildKeypad(ShadThemeData theme) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: ['1', '2', '3'].map((key) => _buildKey(key)).toList(),
+          children: ['1', '2', '3'].map((key) => _buildKey(key, theme)).toList(),
         ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: ['4', '5', '6'].map((key) => _buildKey(key)).toList(),
+          children: ['4', '5', '6'].map((key) => _buildKey(key, theme)).toList(),
         ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: ['7', '8', '9'].map((key) => _buildKey(key)).toList(),
+          children: ['7', '8', '9'].map((key) => _buildKey(key, theme)).toList(),
         ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             const SizedBox(width: 80),
-            _buildKey('0'),
-            _buildDeleteKey(),
+            _buildKey('0', theme),
+            _buildDeleteKey(theme),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildKey(String key) {
+  Widget _buildKey(String key, ShadThemeData theme) {
     return SizedBox(
       width: 80,
       height: 80,
@@ -331,8 +323,8 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: RelunaTheme.surfaceLight,
-              border: Border.all(color: RelunaTheme.divider),
+              color: theme.colorScheme.card,
+              border: Border.all(color: theme.colorScheme.border),
             ),
             child: Center(
               child: Text(
@@ -341,8 +333,8 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
                   fontSize: 28,
                   fontWeight: FontWeight.w500,
                   color: _attempts >= 3 
-                      ? RelunaTheme.textTertiary 
-                      : RelunaTheme.textPrimary,
+                      ? theme.colorScheme.mutedForeground 
+                      : theme.colorScheme.foreground,
                 ),
               ),
             ),
@@ -352,7 +344,7 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
     );
   }
 
-  Widget _buildDeleteKey() {
+  Widget _buildDeleteKey(ShadThemeData theme) {
     return SizedBox(
       width: 80,
       height: 80,
@@ -361,11 +353,11 @@ class _PinVerifyScreenState extends ConsumerState<PinVerifyScreen>
         child: InkWell(
           onTap: _onDelete,
           borderRadius: BorderRadius.circular(40),
-          child: const Center(
+          child: Center(
             child: Icon(
               Icons.backspace_outlined,
               size: 28,
-              color: RelunaTheme.textSecondary,
+              color: theme.colorScheme.mutedForeground,
             ),
           ),
         ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../data/models/communication.dart';
 
 // Mock data providers
@@ -143,14 +143,14 @@ class _CommunicationScreenState extends ConsumerState<CommunicationScreen> with 
     final announcements = ref.watch(announcementsProvider);
     final messages = ref.watch(familyMessagesProvider);
     final summary = ref.watch(communicationSummaryProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Communication',
       hasBackButton: true,
       actions: [
-        AdaptiveIconButton(
-          icon: isIOS ? CupertinoIcons.add : Icons.add,
+        IconButton(
+          icon: const Icon(Icons.add),
           onPressed: () => _showCreateAnnouncementDialog(context),
         ),
       ],
@@ -344,7 +344,7 @@ class _CommunicationScreenState extends ConsumerState<CommunicationScreen> with 
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
-                                  isIOS ? CupertinoIcons.paperplane_fill : Icons.send,
+                                  Icons.send,
                                   color: Colors.white,
                                   size: 20,
                                 ),
@@ -367,15 +367,25 @@ class _CommunicationScreenState extends ConsumerState<CommunicationScreen> with 
   }
 
   void _showCreateAnnouncementDialog(BuildContext context) {
-    AdaptiveDialog.show(
+    showShadDialog(
       context: context,
-      title: 'New Announcement',
-      content: 'Create an announcement to share with family members.',
-      confirmText: 'Create',
-      cancelText: 'Cancel',
-      onConfirm: () {
-        // Create announcement logic would go here
-      },
+      builder: (context) => ShadDialog.alert(
+        title: const Text('New Announcement'),
+        description: const Text('Create an announcement to share with family members.'),
+        actions: [
+          ShadButton.outline(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ShadButton(
+            child: const Text('Create'),
+            onPressed: () {
+              Navigator.pop(context);
+              // Create announcement logic would go here
+            },
+          ),
+        ],
+      ),
     );
   }
 

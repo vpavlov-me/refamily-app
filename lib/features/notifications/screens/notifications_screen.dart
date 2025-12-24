@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../core/providers/providers.dart';
 import '../../../data/models/models.dart';
 import '../../../core/router/app_router.dart';
@@ -24,24 +24,34 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   Widget build(BuildContext context) {
     final notifications = ref.watch(notificationsProvider);
     final notificationsSummary = ref.watch(notificationsSummaryProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Notifications',
       hasBackButton: true,
       actions: [
-        AdaptiveIconButton(
-          icon: isIOS ? CupertinoIcons.checkmark_circle : Icons.done_all,
+        IconButton(
+          icon: const Icon(Icons.done_all),
           onPressed: () {
-            AdaptiveDialog.show(
+            showShadDialog(
               context: context,
-              title: 'Mark All as Read',
-              content: 'Are you sure you want to mark all notifications as read?',
-              confirmText: 'Mark All Read',
-              cancelText: 'Cancel',
-              onConfirm: () {
-                // Mark all as read
-              },
+              builder: (context) => ShadDialog.alert(
+                title: const Text('Mark All as Read'),
+                description: const Text('Are you sure you want to mark all notifications as read?'),
+                actions: [
+                  ShadButton.outline(
+                    child: const Text('Cancel'),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  ShadButton(
+                    child: const Text('Mark All Read'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // Mark all as read
+                    },
+                  ),
+                ],
+              ),
             );
           },
         ),
@@ -104,7 +114,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          isIOS ? CupertinoIcons.bell : Icons.notifications_none,
+                          Icons.notifications_none,
                           size: 64,
                           color: RelunaTheme.textTertiary,
                         ),
@@ -161,7 +171,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   },
                 );
               },
-              loading: () => const Center(child: AdaptiveLoadingIndicator()),
+              loading: () => const Center(child: AppLoadingIndicator()),
               error: (_, __) => const Center(child: Text('Failed to load notifications')),
             ),
           ),

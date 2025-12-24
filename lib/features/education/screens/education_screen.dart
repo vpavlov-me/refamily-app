@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../data/models/education.dart';
 
 // Mock data provider
@@ -136,14 +136,14 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
   Widget build(BuildContext context) {
     final courses = ref.watch(coursesProvider);
     final progress = ref.watch(educationProgressProvider);
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    
 
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Education',
       hasBackButton: true,
       actions: [
-        AdaptiveIconButton(
-          icon: isIOS ? CupertinoIcons.bookmark : Icons.bookmark_border,
+        IconButton(
+          icon: const Icon(Icons.bookmark_border),
           onPressed: () {},
         ),
       ],
@@ -436,14 +436,14 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
-                      child: AdaptiveButton(
-                        text: course.status == CourseStatus.inProgress 
+                      child: ShadButton(
+                        child: Text(course.status == CourseStatus.inProgress 
                             ? 'Continue Learning'
                             : course.status == CourseStatus.completed
                                 ? 'Review Course'
                                 : course.status == CourseStatus.locked
                                     ? 'Locked'
-                                    : 'Start Course',
+                                    : 'Start Course'),
                         onPressed: course.status == CourseStatus.locked ? null : () {
                           Navigator.pop(context);
                         },

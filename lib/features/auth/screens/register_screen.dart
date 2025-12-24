@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
-import '../../../core/theme/reluna_theme.dart';
-import '../../../core/adaptive/adaptive.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+import '../../../core/theme/theme.dart';
+import '../../../shared/shared.dart';
 import '../../../core/providers/providers.dart';
 import '../../../core/router/app_router.dart';
 
@@ -71,33 +71,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   void _showError(String message) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
-    if (isIOS) {
-      showCupertinoDialog(
-        context: context,
-        builder: (context) => CupertinoAlertDialog(
-          title: const Text('Error'),
-          content: Text(message),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text('OK'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
-    }
+    ShadToaster.of(context).show(
+      ShadToast.destructive(
+        title: const Text('Error'),
+        description: Text(message),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = AdaptivePlatform.isIOSByContext(context);
+    final theme = ShadTheme.of(context);
     
-    return AdaptiveScaffold(
+    return AppScaffold(
       title: 'Create Account',
       hasBackButton: true,
       body: SingleChildScrollView(
@@ -107,88 +93,73 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           children: [
             const SizedBox(height: 24),
             
-            const Text(
+            Text(
               'Join Your Family',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: RelunaTheme.textPrimary,
-              ),
+              style: theme.textTheme.h3,
             ),
             
             const SizedBox(height: 8),
             
-            const Text(
+            Text(
               'Create an account to get started with family governance',
-              style: TextStyle(
-                fontSize: 15,
-                color: RelunaTheme.textSecondary,
-              ),
+              style: theme.textTheme.muted,
             ),
             
             const SizedBox(height: 32),
             
-            AdaptiveTextField(
+            ShadInput(
               controller: _nameController,
-              label: 'Full Name',
-              placeholder: 'Enter your full name',
-              textInputAction: TextInputAction.next,
+              placeholder: const Text('Enter your full name'),
               prefix: Icon(
-                isIOS ? CupertinoIcons.person : Icons.person_outline,
-                color: RelunaTheme.textSecondary,
+                Icons.person_outline,
+                color: theme.colorScheme.mutedForeground,
                 size: 20,
               ),
             ),
             
             const SizedBox(height: 16),
             
-            AdaptiveTextField(
+            ShadInput(
               controller: _familyNameController,
-              label: 'Family Name',
-              placeholder: 'Enter your family name',
-              textInputAction: TextInputAction.next,
+              placeholder: const Text('Enter your family name'),
               prefix: Icon(
-                isIOS ? CupertinoIcons.house : Icons.family_restroom,
-                color: RelunaTheme.textSecondary,
+                Icons.family_restroom,
+                color: theme.colorScheme.mutedForeground,
                 size: 20,
               ),
             ),
             
             const SizedBox(height: 16),
             
-            AdaptiveTextField(
+            ShadInput(
               controller: _emailController,
-              label: 'Email',
-              placeholder: 'Enter your email',
+              placeholder: const Text('Enter your email'),
               keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
               prefix: Icon(
-                isIOS ? CupertinoIcons.mail : Icons.email_outlined,
-                color: RelunaTheme.textSecondary,
+                Icons.email_outlined,
+                color: theme.colorScheme.mutedForeground,
                 size: 20,
               ),
             ),
             
             const SizedBox(height: 16),
             
-            AdaptiveTextField(
+            ShadInput(
               controller: _passwordController,
-              label: 'Password',
-              placeholder: 'Create a password',
+              placeholder: const Text('Create a password'),
               obscureText: _obscurePassword,
-              textInputAction: TextInputAction.next,
               prefix: Icon(
-                isIOS ? CupertinoIcons.lock : Icons.lock_outline,
-                color: RelunaTheme.textSecondary,
+                Icons.lock_outline,
+                color: theme.colorScheme.mutedForeground,
                 size: 20,
               ),
               suffix: GestureDetector(
                 onTap: () => setState(() => _obscurePassword = !_obscurePassword),
                 child: Icon(
                   _obscurePassword
-                      ? (isIOS ? CupertinoIcons.eye : Icons.visibility_outlined)
-                      : (isIOS ? CupertinoIcons.eye_slash : Icons.visibility_off_outlined),
-                  color: RelunaTheme.textSecondary,
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  color: theme.colorScheme.mutedForeground,
                   size: 20,
                 ),
               ),
@@ -196,25 +167,22 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             
             const SizedBox(height: 16),
             
-            AdaptiveTextField(
+            ShadInput(
               controller: _confirmPasswordController,
-              label: 'Confirm Password',
-              placeholder: 'Confirm your password',
+              placeholder: const Text('Confirm your password'),
               obscureText: _obscureConfirmPassword,
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => _register(),
               prefix: Icon(
-                isIOS ? CupertinoIcons.lock : Icons.lock_outline,
-                color: RelunaTheme.textSecondary,
+                Icons.lock_outline,
+                color: theme.colorScheme.mutedForeground,
                 size: 20,
               ),
               suffix: GestureDetector(
                 onTap: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                 child: Icon(
                   _obscureConfirmPassword
-                      ? (isIOS ? CupertinoIcons.eye : Icons.visibility_outlined)
-                      : (isIOS ? CupertinoIcons.eye_slash : Icons.visibility_off_outlined),
-                  color: RelunaTheme.textSecondary,
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  color: theme.colorScheme.mutedForeground,
                   size: 20,
                 ),
               ),
@@ -222,10 +190,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             
             const SizedBox(height: 32),
             
-            AdaptiveButton(
-              text: 'Create Account',
-              isLoading: _isLoading,
+            ShadButton(
+              child: const Text('Create Account'),
+              enabled: !_isLoading,
               onPressed: _register,
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : null,
             ),
             
             const SizedBox(height: 24),
@@ -233,12 +211,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'Already have an account? ',
-                  style: TextStyle(color: RelunaTheme.textSecondary),
+                  style: theme.textTheme.muted,
                 ),
-                AdaptiveTextButton(
-                  text: 'Sign In',
+                ShadButton.link(
+                  child: const Text('Sign In'),
                   onPressed: () => context.router.maybePop(),
                 ),
               ],
