@@ -3,7 +3,10 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// Reluna Family App Theme with shadcn_ui
 /// Accent color: #FB6428 (buttons, active states ONLY)
+/// Font: PP Object Sans
 class RelunaTheme {
+  static const String fontFamily = 'PPObjectSans';
+  
   static const Color accentColor = Color(0xFFFB6428);
   static const Color accentColorLight = Color(0xFFFFE4D9);
   
@@ -13,10 +16,11 @@ class RelunaTheme {
   static const Color background = backgroundLight;
   static const Color surfaceLight = Colors.white;
   static const Color surfaceDark = Color(0xFF2D2D2D);
-  static const Color textPrimary = Color(0xFF1A1A1A);
-  static const Color textSecondary = Color(0xFF6B7280);
+  static const Color textPrimary = Color(0xFF121212);
+  static const Color textSecondary = Color(0x80121212); // 50% opacity
   static const Color textTertiary = Color(0xFF9CA3AF);
   static const Color divider = Color(0xFFE5E7EB);
+  static const Color border = Color(0x0D121212); // 5% opacity
   
   // Status colors
   static const Color success = Color(0xFF10B981);
@@ -67,11 +71,12 @@ class RelunaTheme {
 
   /// iOS Human Interface Guidelines Typography
   /// Based on Large (default) Dynamic Type sizes
-  /// https://developer.apple.com/design/human-interface-guidelines/typography
+  /// Font: PP Object Sans
   static ShadTextTheme _textTheme(Color foreground, Color mutedForeground) {
     return ShadTextTheme(
       // Large Title: 34pt Regular
       h1Large: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 34,
         fontWeight: FontWeight.w400,
         color: foreground,
@@ -80,6 +85,7 @@ class RelunaTheme {
       ),
       // Title 1: 28pt Regular
       h1: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 28,
         fontWeight: FontWeight.w400,
         color: foreground,
@@ -88,6 +94,7 @@ class RelunaTheme {
       ),
       // Title 2: 22pt Regular  
       h2: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 22,
         fontWeight: FontWeight.w400,
         color: foreground,
@@ -96,6 +103,7 @@ class RelunaTheme {
       ),
       // Title 3: 20pt Regular
       h3: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 20,
         fontWeight: FontWeight.w400,
         color: foreground,
@@ -104,6 +112,7 @@ class RelunaTheme {
       ),
       // Headline: 17pt Semibold
       h4: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 17,
         fontWeight: FontWeight.w600,
         color: foreground,
@@ -112,6 +121,7 @@ class RelunaTheme {
       ),
       // Body: 17pt Regular
       p: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 17,
         fontWeight: FontWeight.w400,
         color: foreground,
@@ -120,6 +130,7 @@ class RelunaTheme {
       ),
       // Blockquote: Body italic
       blockquote: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 17,
         fontWeight: FontWeight.w400,
         color: mutedForeground,
@@ -129,6 +140,7 @@ class RelunaTheme {
       ),
       // Callout: 16pt Regular
       table: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 16,
         fontWeight: FontWeight.w400,
         color: foreground,
@@ -137,6 +149,7 @@ class RelunaTheme {
       ),
       // Body: 17pt for lists
       list: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 17,
         fontWeight: FontWeight.w400,
         color: foreground,
@@ -145,6 +158,7 @@ class RelunaTheme {
       ),
       // Lead: Title 3 style (20pt)
       lead: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 20,
         fontWeight: FontWeight.w400,
         color: mutedForeground,
@@ -153,6 +167,7 @@ class RelunaTheme {
       ),
       // Large: Headline (17pt Semibold)
       large: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 17,
         fontWeight: FontWeight.w600,
         color: foreground,
@@ -161,6 +176,7 @@ class RelunaTheme {
       ),
       // Subhead: 15pt Regular
       small: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 15,
         fontWeight: FontWeight.w400,
         color: foreground,
@@ -169,6 +185,7 @@ class RelunaTheme {
       ),
       // Footnote: 13pt Regular
       muted: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 13,
         fontWeight: FontWeight.w400,
         color: mutedForeground,

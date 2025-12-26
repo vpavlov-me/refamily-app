@@ -23,7 +23,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final notifications = ref.watch(notificationsProvider);
-    final notificationsSummary = ref.watch(notificationsSummaryProvider);
     
 
     return AppScaffold(
@@ -58,48 +57,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       ],
       body: Column(
         children: [
-          // Summary
-          notificationsSummary.when(
-            data: (summary) => Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _SummaryCard(
-                      label: 'Unread',
-                      value: '${summary.unread}',
-                      color: RelunaTheme.accentColor,
-                      isSelected: _filter == 'Unread',
-                      onTap: () => setState(() => _filter = _filter == 'Unread' ? 'All' : 'Unread'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _SummaryCard(
-                      label: 'Today',
-                      value: '${summary.today}',
-                      color: RelunaTheme.info,
-                      isSelected: false,
-                      onTap: null,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _SummaryCard(
-                      label: 'Total',
-                      value: '${summary.total}',
-                      color: RelunaTheme.textSecondary,
-                      isSelected: false,
-                      onTap: null,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-
           // Notifications list
           Expanded(
             child: notifications.when(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
@@ -150,94 +151,14 @@ class _AssetsScreenState extends ConsumerState<AssetsScreen> {
       ],
       body: Column(
         children: [
-          // Summary Card
-          summary.when(
-            data: (data) => Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    RelunaTheme.accentColor,
-                    RelunaTheme.accentColor.withValues(alpha: 0.8),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Total Portfolio Value',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    currencyFormat.format(data.totalValue),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: data.totalGain >= 0 
-                              ? Colors.green.withValues(alpha: 0.2)
-                              : Colors.red.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              data.totalGain >= 0 ? Icons.trending_up : Icons.trending_down,
-                              color: data.totalGain >= 0 ? Colors.greenAccent : Colors.redAccent,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${data.totalGain >= 0 ? '+' : ''}${currencyFormat.format(data.totalGain)}',
-                              style: TextStyle(
-                                color: data.totalGain >= 0 ? Colors.greenAccent : Colors.redAccent,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        '${data.totalAssets} Assets',
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            loading: () => const SizedBox(height: 150, child: Center(child: CircularProgressIndicator())),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-
           // Search
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.all(16),
             child: ShadInput(
               placeholder: const Text('Search assets...'),
               onChanged: (value) => setState(() => _searchQuery = value),
             ),
           ),
-          const SizedBox(height: 12),
 
           // Type Filter
           SizedBox(
@@ -304,7 +225,7 @@ class _AssetsScreenState extends ConsumerState<AssetsScreen> {
                   ),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (e, _) => Center(child: Text('Error: $e')),
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -7,7 +8,6 @@ import '../../../core/theme/theme.dart';
 import '../../../core/providers/providers.dart';
 import '../../../data/models/models.dart';
 import '../../../core/router/app_router.dart';
-import '../../../shared/shared.dart';
 
 @RoutePage()
 class DashboardScreen extends ConsumerWidget {
@@ -15,83 +15,127 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ShadTheme.of(context);
     final authState = ref.watch(authStateProvider);
-    final constitution = ref.watch(constitutionProvider);
     final membersSummary = ref.watch(membersSummaryProvider);
     final decisionsSummary = ref.watch(decisionsSummaryProvider);
     final meetingsSummary = ref.watch(meetingsSummaryProvider);
-    final activities = ref.watch(activitiesProvider);
-    final notificationsSummary = ref.watch(notificationsSummaryProvider);
 
-    return AppScaffold(
-      title: 'Dashboard',
-      actions: [
-        Stack(
-          children: [
-            IconButton(
-              icon: const Icon(Icons.notifications_outlined),
-              onPressed: () => context.router.push(const NotificationsRoute()),
+    return Scaffold(
+      backgroundColor: RelunaTheme.background,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+        slivers: [
+          CupertinoSliverRefreshControl(
+            onRefresh: () async {
+              ref.invalidate(membersSummaryProvider);
+              ref.invalidate(decisionsSummaryProvider);
+              ref.invalidate(meetingsSummaryProvider);
+            },
+          ),
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                // Header with gradient background
+                _GradientHeader(
+                  user: authState.currentUser,
+                  onNotificationTap: () => context.router.push(const NotificationsRoute()),
+                  onProfileTap: () => context.router.push(const ProfileRoute()),
+                ),
+
+                // Quick stats cards
+                _QuickStatsRow(
+                  membersSummary: membersSummary,
+                  meetingsSummary: meetingsSummary,
+                  decisionsSummary: decisionsSummary,
+                ),
+
+                const SizedBox(height: 16),
+
+                // Progress card
+                _ProgressCard(membersSummary: membersSummary),
+
+                const SizedBox(height: 24),
+
+                // Upcoming meetings section
+                _UpcomingMeetingsSection(),
+              ],
             ),
-            notificationsSummary.when(
-              data: (summary) => summary.unread > 0
-                  ? Positioned(
-                      right: 8,
-                      top: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.destructive,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Text(
-                          '${summary.unread}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-              loading: () => const SizedBox.shrink(),
-              error: (_, __) => const SizedBox.shrink(),
-            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GradientHeader extends StatelessWidget {
+  final User? user;
+  final VoidCallback onNotificationTap;
+  final VoidCallback onProfileTap;
+
+  const _GradientHeader({
+    this.user,
+    required this.onNotificationTap,
+    required this.onProfileTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFFFB088),
+            Color(0xFFFF8A5B),
+            Color(0xFFFFAA7D),
           ],
         ),
-      ],
-      body: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(constitutionProvider);
-          ref.invalidate(membersSummaryProvider);
-          ref.invalidate(decisionsSummaryProvider);
-          ref.invalidate(meetingsSummaryProvider);
-          ref.invalidate(activitiesProvider);
-        },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 24),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Welcome section
-              _WelcomeSection(user: authState.currentUser),
-              
-              // Quick stats
-              _QuickStats(
-                decisionsSummary: decisionsSummary,
-                meetingsSummary: meetingsSummary,
+              // Top row with profile and notification icons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _CircleIconButton(
+                    icon: LucideIcons.user,
+                    onTap: onProfileTap,
+                  ),
+                  _CircleIconButton(
+                    icon: LucideIcons.bell,
+                    onTap: onNotificationTap,
+                  ),
+                ],
               ),
-              
-              // Constitution status card
-              _ConstitutionCard(constitution: constitution),
-              
-              // Members summary card
-              _MembersCard(membersSummary: membersSummary),
-              
-              // Recent activity
-              _RecentActivity(activities: activities),
+
+              const SizedBox(height: 24),
+
+              // Welcome text
+              Text(
+                'Welcome back, ${user?.name ?? 'User'}!',
+                style: TextStyle(
+                  fontFamily: RelunaTheme.fontFamily,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Here whats happening with your family governance today',
+                style: TextStyle(
+                  fontFamily: RelunaTheme.fontFamily,
+                  fontSize: 14,
+                  color: Colors.white.withValues(alpha: 0.8),
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -100,387 +144,446 @@ class DashboardScreen extends ConsumerWidget {
   }
 }
 
-class _WelcomeSection extends StatelessWidget {
-  final User? user;
+class _CircleIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
 
-  const _WelcomeSection({this.user});
+  const _CircleIconButton({
+    required this.icon,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    final hour = DateTime.now().hour;
-    String greeting;
-    if (hour < 12) {
-      greeting = 'Good Morning';
-    } else if (hour < 17) {
-      greeting = 'Good Afternoon';
-    } else {
-      greeting = 'Good Evening';
-    }
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.2),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Icon(
+          icon,
+          size: 22,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+}
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
+class _QuickStatsRow extends StatelessWidget {
+  final AsyncValue<MembersSummary> membersSummary;
+  final AsyncValue<MeetingsSummary> meetingsSummary;
+  final AsyncValue<DecisionsSummary> decisionsSummary;
+
+  const _QuickStatsRow({
+    required this.membersSummary,
+    required this.meetingsSummary,
+    required this.decisionsSummary,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      transform: Matrix4.translationValues(0, -20, 0),
       child: Row(
         children: [
-          ShadAvatar(
-            user?.avatar ?? 'placeholder',
-            size: const Size(56, 56),
-            placeholder: Text(
-              user?.name.substring(0, 1).toUpperCase() ?? 'U',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
+          Expanded(
+            child: _StatCard(
+              icon: LucideIcons.circleCheck,
+              title: 'Members',
+              value: membersSummary.when(
+                data: (s) => '${s.totalMembers} people',
+                loading: () => '...',
+                error: (_, __) => '-',
               ),
+              onTap: () => context.router.push(const MembersRoute()),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _StatCard(
+              icon: LucideIcons.circleCheck,
+              title: 'Meetings',
+              value: meetingsSummary.when(
+                data: (s) => '${s.upcoming} upcoming',
+                loading: () => '...',
+                error: (_, __) => '-',
+              ),
+              onTap: () => context.router.push(const MeetingsRoute()),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _StatCard(
+              icon: LucideIcons.circleCheck,
+              title: 'Decisions',
+              value: decisionsSummary.when(
+                data: (s) => '${s.voting} opened',
+                loading: () => '...',
+                error: (_, __) => '-',
+              ),
+              onTap: () => context.router.push(const DecisionsRoute()),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String value;
+  final VoidCallback? onTap;
+
+  const _StatCard({
+    required this.icon,
+    required this.title,
+    required this.value,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFFFB088),
+              Color(0xFFFF9966),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: Colors.white.withValues(alpha: 0.8),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: TextStyle(
+                fontFamily: RelunaTheme.fontFamily,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: TextStyle(
+                fontFamily: RelunaTheme.fontFamily,
+                fontSize: 12,
+                color: Colors.white.withValues(alpha: 0.8),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProgressCard extends StatelessWidget {
+  final AsyncValue<MembersSummary> membersSummary;
+
+  const _ProgressCard({required this.membersSummary});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: RelunaTheme.textPrimary.withValues(alpha: 0.1),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0D0084).withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  greeting,
+                  'Unlock the full potential of your Family Governance',
                   style: TextStyle(
-                    fontSize: 14,
-                    color: theme.colorScheme.mutedForeground,
+                    fontFamily: RelunaTheme.fontFamily,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: RelunaTheme.textPrimary,
+                    height: 1.3,
                   ),
                 ),
-                Text(
-                  user?.name ?? 'User',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.foreground,
+                const SizedBox(height: 8),
+                membersSummary.when(
+                  data: (s) => Text(
+                    '6/8 steps · Registered ${s.activeMembers} of ${s.totalMembers} member',
+                    style: TextStyle(
+                      fontFamily: RelunaTheme.fontFamily,
+                      fontSize: 12,
+                      color: RelunaTheme.textSecondary,
+                    ),
                   ),
+                  loading: () => Text(
+                    '...',
+                    style: TextStyle(
+                      fontFamily: RelunaTheme.fontFamily,
+                      fontSize: 12,
+                      color: RelunaTheme.textSecondary,
+                    ),
+                  ),
+                  error: (_, __) => const SizedBox.shrink(),
                 ),
-                if (user?.role != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: RoleBadge(role: user!.role),
-                  ),
               ],
             ),
           ),
+          const SizedBox(width: 16),
+          _CircularProgress(progress: 0.70),
         ],
       ),
     );
   }
 }
 
-class _QuickStats extends StatelessWidget {
-  final AsyncValue<DecisionsSummary> decisionsSummary;
-  final AsyncValue<MeetingsSummary> meetingsSummary;
+class _CircularProgress extends StatelessWidget {
+  final double progress;
 
-  const _QuickStats({
-    required this.decisionsSummary,
-    required this.meetingsSummary,
-  });
+  const _CircularProgress({required this.progress});
 
   @override
   Widget build(BuildContext context) {
+    return SizedBox(
+      width: 56,
+      height: 56,
+      child: Stack(
+        children: [
+          SizedBox(
+            width: 56,
+            height: 56,
+            child: CircularProgressIndicator(
+              value: progress,
+              strokeWidth: 4,
+              backgroundColor: RelunaTheme.accentColor.withValues(alpha: 0.2),
+              valueColor: const AlwaysStoppedAnimation<Color>(RelunaTheme.accentColor),
+            ),
+          ),
+          Center(
+            child: Text(
+              '${(progress * 100).toInt()}%',
+              style: TextStyle(
+                fontFamily: RelunaTheme.fontFamily,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: RelunaTheme.accentColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UpcomingMeetingsSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final meetings = ref.watch(meetingsProvider);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          Expanded(
-            child: StatCard(
-              icon: Icons.how_to_vote_outlined,
-              label: 'Active Decisions',
-              value: decisionsSummary.when(
-                data: (s) => '${s.voting}',
-                loading: () => '-',
-                error: (_, __) => '-',
-              ),
-              color: RelunaTheme.accentColor,
-              onTap: () => context.router.push(const DecisionsRoute()),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: StatCard(
-              icon: Icons.event_outlined,
-              label: 'Upcoming Meetings',
-              value: meetingsSummary.when(
-                data: (s) => '${s.upcoming}',
-                loading: () => '-',
-                error: (_, __) => '-',
-              ),
-              color: RelunaTheme.info,
-              onTap: () => context.router.push(const MeetingsRoute()),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ConstitutionCard extends StatelessWidget {
-  final AsyncValue<Constitution> constitution;
-
-  const _ConstitutionCard({required this.constitution});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    
-    return AppCard(
-      onTap: () => context.router.push(const ConstitutionRoute()),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Section header
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: RelunaTheme.info.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.description_outlined,
-                  color: RelunaTheme.info,
-                  size: 24,
+              Text(
+                'Upcoming meetings',
+                style: TextStyle(
+                  fontFamily: RelunaTheme.fontFamily,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: RelunaTheme.textPrimary,
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Family Constitution',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.foreground,
-                  ),
-                ),
-              ),
-              constitution.when(
-                data: (c) => ShadBadge.secondary(
-                  child: Text('v${c.version}'),
-                ),
-                loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          constitution.when(
-            data: (c) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Last edited ${_formatDate(c.lastEditedAt)}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: theme.colorScheme.mutedForeground,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'by ${c.lastEditedBy}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: theme.colorScheme.mutedForeground.withValues(alpha: 0.7),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
+              GestureDetector(
+                onTap: () => context.router.push(const MeetingsRoute()),
+                child: Row(
                   children: [
-                    const Spacer(),
-                    ShadButton(
-                      size: ShadButtonSize.sm,
-                      onPressed: () => context.router.push(const ConstitutionRoute()),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Open'),
-                          SizedBox(width: 4),
-                          Icon(Icons.arrow_forward, size: 16),
-                        ],
+                    Text(
+                      'View All',
+                      style: TextStyle(
+                        fontFamily: RelunaTheme.fontFamily,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: RelunaTheme.accentColor,
                       ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      LucideIcons.chevronRight,
+                      size: 16,
+                      color: RelunaTheme.accentColor,
                     ),
                   ],
                 ),
-              ],
-            ),
-            loading: () => const Center(child: AppLoadingIndicator(size: 24)),
-            error: (_, __) => const Text('Failed to load constitution'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final diff = now.difference(date);
-    
-    if (diff.inDays == 0) {
-      return 'today';
-    } else if (diff.inDays == 1) {
-      return 'yesterday';
-    } else if (diff.inDays < 7) {
-      return '${diff.inDays} days ago';
-    } else {
-      return DateFormat('MMM d, y').format(date);
-    }
-  }
-}
-
-class _MembersCard extends StatelessWidget {
-  final AsyncValue<MembersSummary> membersSummary;
-
-  const _MembersCard({required this.membersSummary});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    
-    return AppCard(
-      onTap: () => context.router.push(const MembersRoute()),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: RelunaTheme.roleColors['Founder']!.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  Icons.people_outline,
-                  color: RelunaTheme.roleColors['Founder'],
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Family Members',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.foreground,
-                  ),
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: theme.colorScheme.mutedForeground,
               ),
             ],
           ),
+
           const SizedBox(height: 16),
-          membersSummary.when(
-            data: (summary) => Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _MemberStat(label: 'Total', value: '${summary.totalMembers}'),
-                    _MemberStat(label: 'Active', value: '${summary.activeMembers}'),
-                    _MemberStat(label: 'Generations', value: '${summary.generations}'),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: summary.byRole.entries.map((entry) {
-                    return RoleBadge(role: '${entry.value} ${entry.key}');
-                  }).toList(),
-                ),
-              ],
+
+          // Meeting cards
+          meetings.when(
+            data: (meetingsList) {
+              final upcoming = meetingsList
+                  .where((m) => m.date.isAfter(DateTime.now()))
+                  .take(4)
+                  .toList();
+
+              if (upcoming.isEmpty) {
+                return Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: RelunaTheme.textPrimary.withValues(alpha: 0.1),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'No upcoming meetings',
+                      style: TextStyle(
+                        fontFamily: RelunaTheme.fontFamily,
+                        fontSize: 14,
+                        color: RelunaTheme.textSecondary,
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              return Column(
+                children: upcoming.map((meeting) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: _MeetingCard(meeting: meeting),
+                  );
+                }).toList(),
+              );
+            },
+            loading: () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24),
+                child: CupertinoActivityIndicator(),
+              ),
             ),
-            loading: () => const Center(child: AppLoadingIndicator(size: 24)),
-            error: (_, __) => const Text('Failed to load members'),
+            error: (_, __) => Container(
+              padding: const EdgeInsets.all(24),
+              child: const Text('Failed to load meetings'),
+            ),
           ),
+
+          const SizedBox(height: 100), // Space for bottom nav
         ],
       ),
     );
   }
 }
 
-class _MemberStat extends StatelessWidget {
-  final String label;
-  final String value;
+class _MeetingCard extends StatelessWidget {
+  final Meeting meeting;
 
-  const _MemberStat({
-    required this.label,
-    required this.value,
-  });
+  const _MeetingCard({required this.meeting});
 
   @override
   Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    
-    return Column(
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.foreground,
-          ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: theme.colorScheme.mutedForeground,
-          ),
-        ),
-      ],
-    );
-  }
-}
+    final dateFormat = DateFormat('MMMM d, yyyy');
+    final timeFormat = DateFormat('hh:mm a');
 
-class _RecentActivity extends StatelessWidget {
-  final AsyncValue<List<Activity>> activities;
-
-  const _RecentActivity({required this.activities});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SectionHeader(title: 'Recent Activity'),
-        activities.when(
-          data: (items) => items.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text('No recent activity'),
-                )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: items.length > 5 ? 5 : items.length,
-                  itemBuilder: (context, index) {
-                    final activity = items[index];
-                    return ActivityItem(
-                      title: activity.title,
-                      description: activity.description,
-                      type: activity.type,
-                      timestamp: activity.timestamp,
-                    );
-                  },
-                ),
-          loading: () => const Padding(
-            padding: EdgeInsets.all(32),
-            child: Center(child: AppLoadingIndicator()),
+    return GestureDetector(
+      onTap: () => context.router.push(MeetingDetailRoute(meetingId: meeting.id)),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: RelunaTheme.textPrimary.withValues(alpha: 0.1),
           ),
-          error: (_, __) => const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('Failed to load activity'),
-          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF0D0084).withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-      ],
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    meeting.title,
+                    style: TextStyle(
+                      fontFamily: RelunaTheme.fontFamily,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: RelunaTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${dateFormat.format(meeting.date)} · ${timeFormat.format(meeting.date)} — ${timeFormat.format(meeting.endTime)}',
+                    style: TextStyle(
+                      fontFamily: RelunaTheme.fontFamily,
+                      fontSize: 13,
+                      color: RelunaTheme.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              LucideIcons.chevronRight,
+              size: 20,
+              color: RelunaTheme.textSecondary,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -87,12 +87,271 @@
       ],
       "notes": "Full-day workshop. Breakfast and lunch provided. Casual attire appropriate.",
       "createdAt": "2025-12-15T14:00:00Z"
+    },
+    {
+      "id": "meet_004",
+      "title": "Annual Budget Planning Session",
+      "type": "Family Council",
+      "date": "2026-01-15T10:00:00Z",
+      "endTime": "2026-01-15T14:00:00Z",
+      "location": "Main Family Estate - Board Room",
+      "isVirtual": false,
+      "virtualLink": null,
+      "status": "Scheduled",
+      "organizer": "Michael Reluna",
+      "attendees": [
+        {"id": "member_001", "name": "Alexander Reluna", "role": "Founder", "status": "Confirmed"},
+        {"id": "member_002", "name": "Victoria Reluna", "role": "Chair", "status": "Confirmed"},
+        {"id": "member_003", "name": "Michael Reluna", "role": "CFO", "status": "Confirmed"},
+        {"id": "member_004", "name": "Elena Reluna", "role": "Advisor", "status": "Confirmed"}
+      ],
+      "agenda": [
+        {"id": "ag_014", "order": 1, "title": "2025 Financial Year Review", "duration": 45, "presenter": "Michael Reluna"},
+        {"id": "ag_015", "order": 2, "title": "2026 Budget Proposal Presentation", "duration": 60, "presenter": "Michael Reluna"},
+        {"id": "ag_016", "order": 3, "title": "Discussion & Adjustments", "duration": 45, "presenter": "Victoria Reluna"},
+        {"id": "ag_017", "order": 4, "title": "Budget Approval Vote", "duration": 30, "presenter": "Alexander Reluna"}
+      ],
+      "documents": [
+        {"id": "doc_007", "title": "2025 Annual Financial Report.pdf", "type": "PDF"},
+        {"id": "doc_008", "title": "2026 Budget Proposal.xlsx", "type": "Excel"},
+        {"id": "doc_009", "title": "Investment Strategy 2026.pdf", "type": "PDF"}
+      ],
+      "notes": "Important session to approve next year's budget. Please review all financial documents in advance.",
+      "createdAt": "2025-12-20T11:00:00Z"
+    },
+    {
+      "id": "meet_005",
+      "title": "Philanthropy Committee Quarterly Review",
+      "type": "Committee",
+      "date": "2026-01-20T15:00:00Z",
+      "endTime": "2026-01-20T17:00:00Z",
+      "location": "Virtual",
+      "isVirtual": true,
+      "virtualLink": "https://meet.google.com/abc-defg-hij",
+      "status": "Scheduled",
+      "organizer": "Victoria Reluna",
+      "attendees": [
+        {"id": "member_002", "name": "Victoria Reluna", "role": "Chair", "status": "Confirmed"},
+        {"id": "member_004", "name": "Elena Reluna", "role": "Advisor", "status": "Confirmed"},
+        {"id": "member_005", "name": "Sophia Reluna", "role": "Next-Gen", "status": "Tentative"}
+      ],
+      "agenda": [
+        {"id": "ag_018", "order": 1, "title": "Q4 2025 Giving Report", "duration": 30, "presenter": "Victoria Reluna"},
+        {"id": "ag_019", "order": 2, "title": "Impact Assessment Review", "duration": 30, "presenter": "Elena Reluna"},
+        {"id": "ag_020", "order": 3, "title": "2026 Philanthropy Strategy", "duration": 45, "presenter": "Victoria Reluna"}
+      ],
+      "documents": [
+        {"id": "doc_010", "title": "Q4 Philanthropy Report.pdf", "type": "PDF"},
+        {"id": "doc_011", "title": "Impact Metrics Dashboard.xlsx", "type": "Excel"}
+      ],
+      "notes": "Virtual meeting to review philanthropic activities and plan for 2026.",
+      "createdAt": "2025-12-22T09:00:00Z"
+    },
+    {
+      "id": "meet_006",
+      "title": "Estate Planning Discussion",
+      "type": "Family Council",
+      "date": "2026-02-01T11:00:00Z",
+      "endTime": "2026-02-01T13:00:00Z",
+      "location": "Family Law Office - Meeting Room 2",
+      "isVirtual": false,
+      "virtualLink": null,
+      "status": "Scheduled",
+      "organizer": "Alexander Reluna",
+      "attendees": [
+        {"id": "member_001", "name": "Alexander Reluna", "role": "Founder", "status": "Confirmed"},
+        {"id": "member_002", "name": "Victoria Reluna", "role": "Chair", "status": "Confirmed"},
+        {"id": "member_003", "name": "Michael Reluna", "role": "CFO", "status": "Pending"},
+        {"id": "member_004", "name": "Elena Reluna", "role": "Advisor", "status": "Pending"}
+      ],
+      "agenda": [
+        {"id": "ag_021", "order": 1, "title": "Current Estate Structure Overview", "duration": 30, "presenter": "External Legal Counsel"},
+        {"id": "ag_022", "order": 2, "title": "Succession Planning Updates", "duration": 40, "presenter": "Alexander Reluna"},
+        {"id": "ag_023", "order": 3, "title": "Trust Amendments Discussion", "duration": 30, "presenter": "External Legal Counsel"}
+      ],
+      "documents": [
+        {"id": "doc_012", "title": "Estate Structure Summary.pdf", "type": "PDF"},
+        {"id": "doc_013", "title": "Succession Plan Draft.docx", "type": "Word"}
+      ],
+      "notes": "Confidential session with family legal counsel present. Please confirm attendance ASAP.",
+      "createdAt": "2025-12-18T16:00:00Z"
+    },
+    {
+      "id": "meet_007",
+      "title": "Family Retreat Planning Committee",
+      "type": "Committee",
+      "date": "2026-02-10T14:00:00Z",
+      "endTime": "2026-02-10T15:30:00Z",
+      "location": "Virtual",
+      "isVirtual": true,
+      "virtualLink": "https://teams.microsoft.com/meet/retreat2026",
+      "status": "Scheduled",
+      "organizer": "Elena Reluna",
+      "attendees": [
+        {"id": "member_004", "name": "Elena Reluna", "role": "Advisor", "status": "Confirmed"},
+        {"id": "member_005", "name": "Sophia Reluna", "role": "Next-Gen", "status": "Confirmed"},
+        {"id": "member_002", "name": "Victoria Reluna", "role": "Chair", "status": "Tentative"}
+      ],
+      "agenda": [
+        {"id": "ag_024", "order": 1, "title": "Venue Selection Discussion", "duration": 25, "presenter": "Elena Reluna"},
+        {"id": "ag_025", "order": 2, "title": "Activities & Program Planning", "duration": 35, "presenter": "Sophia Reluna"},
+        {"id": "ag_026", "order": 3, "title": "Budget & Timeline Review", "duration": 20, "presenter": "Elena Reluna"}
+      ],
+      "documents": [
+        {"id": "doc_014", "title": "Venue Options Comparison.pdf", "type": "PDF"},
+        {"id": "doc_015", "title": "Retreat Activities Ideas.docx", "type": "Word"}
+      ],
+      "notes": "Planning committee meeting for the annual family retreat scheduled for summer 2026.",
+      "createdAt": "2025-12-25T10:00:00Z"
+    },
+    {
+      "id": "meet_008",
+      "title": "Monthly Family Check-in",
+      "type": "Informal",
+      "date": "2026-01-10T18:00:00Z",
+      "endTime": "2026-01-10T19:30:00Z",
+      "location": "Virtual",
+      "isVirtual": true,
+      "virtualLink": "https://zoom.us/j/familycheckin",
+      "status": "Scheduled",
+      "organizer": "Victoria Reluna",
+      "attendees": [
+        {"id": "member_001", "name": "Alexander Reluna", "role": "Founder", "status": "Confirmed"},
+        {"id": "member_002", "name": "Victoria Reluna", "role": "Chair", "status": "Confirmed"},
+        {"id": "member_003", "name": "Michael Reluna", "role": "CFO", "status": "Confirmed"},
+        {"id": "member_004", "name": "Elena Reluna", "role": "Advisor", "status": "Confirmed"},
+        {"id": "member_005", "name": "Sophia Reluna", "role": "Next-Gen", "status": "Confirmed"}
+      ],
+      "agenda": [
+        {"id": "ag_027", "order": 1, "title": "Personal Updates Round", "duration": 30, "presenter": "All Members"},
+        {"id": "ag_028", "order": 2, "title": "Upcoming Events Overview", "duration": 20, "presenter": "Victoria Reluna"},
+        {"id": "ag_029", "order": 3, "title": "Open Discussion", "duration": 30, "presenter": "All Members"}
+      ],
+      "documents": [],
+      "notes": "Casual monthly catch-up to stay connected. No formal preparation required.",
+      "createdAt": "2025-12-26T08:00:00Z"
+    },
+    {
+      "id": "meet_009",
+      "title": "Emergency Meeting: Market Volatility Response",
+      "type": "Emergency",
+      "date": "2025-12-20T09:00:00Z",
+      "endTime": "2025-12-20T10:30:00Z",
+      "location": "Virtual",
+      "isVirtual": true,
+      "virtualLink": "https://zoom.us/j/emergency123",
+      "status": "Completed",
+      "organizer": "Michael Reluna",
+      "attendees": [
+        {"id": "member_001", "name": "Alexander Reluna", "role": "Founder", "status": "Confirmed"},
+        {"id": "member_003", "name": "Michael Reluna", "role": "CFO", "status": "Confirmed"},
+        {"id": "member_002", "name": "Victoria Reluna", "role": "Chair", "status": "Confirmed"}
+      ],
+      "agenda": [
+        {"id": "ag_030", "order": 1, "title": "Current Market Situation Analysis", "duration": 20, "presenter": "Michael Reluna"},
+        {"id": "ag_031", "order": 2, "title": "Portfolio Risk Assessment", "duration": 25, "presenter": "Michael Reluna"},
+        {"id": "ag_032", "order": 3, "title": "Recommended Actions", "duration": 25, "presenter": "Alexander Reluna"}
+      ],
+      "documents": [
+        {"id": "doc_016", "title": "Market Analysis Report.pdf", "type": "PDF"},
+        {"id": "doc_017", "title": "Risk Mitigation Options.xlsx", "type": "Excel"}
+      ],
+      "notes": "Emergency session called due to significant market movements. Immediate decisions required.",
+      "createdAt": "2025-12-19T22:00:00Z"
+    },
+    {
+      "id": "meet_010",
+      "title": "Q3 Family Council Meeting",
+      "type": "Family Council",
+      "date": "2025-09-15T14:00:00Z",
+      "endTime": "2025-09-15T17:00:00Z",
+      "location": "Main Family Estate - Conference Room A",
+      "isVirtual": false,
+      "virtualLink": null,
+      "status": "Completed",
+      "organizer": "Victoria Reluna",
+      "attendees": [
+        {"id": "member_001", "name": "Alexander Reluna", "role": "Founder", "status": "Confirmed"},
+        {"id": "member_002", "name": "Victoria Reluna", "role": "Chair", "status": "Confirmed"},
+        {"id": "member_003", "name": "Michael Reluna", "role": "CFO", "status": "Confirmed"},
+        {"id": "member_004", "name": "Elena Reluna", "role": "Advisor", "status": "Confirmed"}
+      ],
+      "agenda": [
+        {"id": "ag_033", "order": 1, "title": "Opening & Minutes Approval", "duration": 10, "presenter": "Victoria Reluna"},
+        {"id": "ag_034", "order": 2, "title": "Q2 Financial Review", "duration": 40, "presenter": "Michael Reluna"},
+        {"id": "ag_035", "order": 3, "title": "New Investment Opportunities", "duration": 45, "presenter": "Michael Reluna"},
+        {"id": "ag_036", "order": 4, "title": "Family Office Updates", "duration": 30, "presenter": "Victoria Reluna"}
+      ],
+      "documents": [
+        {"id": "doc_018", "title": "Q2 Financial Report.pdf", "type": "PDF"},
+        {"id": "doc_019", "title": "Meeting Minutes Q2.docx", "type": "Word"}
+      ],
+      "notes": "Regular quarterly council meeting. All resolutions passed unanimously.",
+      "createdAt": "2025-08-20T10:00:00Z"
+    },
+    {
+      "id": "meet_011",
+      "title": "Real Estate Holdings Review",
+      "type": "Committee",
+      "date": "2026-02-20T10:00:00Z",
+      "endTime": "2026-02-20T12:00:00Z",
+      "location": "Main Family Estate - Conference Room B",
+      "isVirtual": false,
+      "virtualLink": null,
+      "status": "Scheduled",
+      "organizer": "Michael Reluna",
+      "attendees": [
+        {"id": "member_001", "name": "Alexander Reluna", "role": "Founder", "status": "Tentative"},
+        {"id": "member_003", "name": "Michael Reluna", "role": "CFO", "status": "Confirmed"},
+        {"id": "member_002", "name": "Victoria Reluna", "role": "Chair", "status": "Confirmed"}
+      ],
+      "agenda": [
+        {"id": "ag_037", "order": 1, "title": "Property Portfolio Overview", "duration": 30, "presenter": "Michael Reluna"},
+        {"id": "ag_038", "order": 2, "title": "Maintenance & Renovation Updates", "duration": 25, "presenter": "Property Manager"},
+        {"id": "ag_039", "order": 3, "title": "New Acquisition Proposals", "duration": 35, "presenter": "Michael Reluna"},
+        {"id": "ag_040", "order": 4, "title": "Budget Allocation for Properties", "duration": 20, "presenter": "Michael Reluna"}
+      ],
+      "documents": [
+        {"id": "doc_020", "title": "Property Portfolio Report.pdf", "type": "PDF"},
+        {"id": "doc_021", "title": "Acquisition Proposals.xlsx", "type": "Excel"}
+      ],
+      "notes": "Annual review of real estate holdings. Property manager will attend for maintenance updates.",
+      "createdAt": "2025-12-24T14:00:00Z"
+    },
+    {
+      "id": "meet_012",
+      "title": "Next-Gen Education Fund Review",
+      "type": "Committee",
+      "date": "2026-03-01T11:00:00Z",
+      "endTime": "2026-03-01T12:30:00Z",
+      "location": "Virtual",
+      "isVirtual": true,
+      "virtualLink": "https://meet.google.com/edu-fund-review",
+      "status": "Scheduled",
+      "organizer": "Elena Reluna",
+      "attendees": [
+        {"id": "member_004", "name": "Elena Reluna", "role": "Advisor", "status": "Confirmed"},
+        {"id": "member_002", "name": "Victoria Reluna", "role": "Chair", "status": "Confirmed"},
+        {"id": "member_005", "name": "Sophia Reluna", "role": "Next-Gen", "status": "Confirmed"}
+      ],
+      "agenda": [
+        {"id": "ag_041", "order": 1, "title": "Fund Performance Review", "duration": 25, "presenter": "Elena Reluna"},
+        {"id": "ag_042", "order": 2, "title": "Current Scholarship Recipients Update", "duration": 20, "presenter": "Victoria Reluna"},
+        {"id": "ag_043", "order": 3, "title": "2026 Education Initiatives", "duration": 30, "presenter": "Elena Reluna"}
+      ],
+      "documents": [
+        {"id": "doc_022", "title": "Education Fund Report.pdf", "type": "PDF"},
+        {"id": "doc_023", "title": "Scholarship Program Update.docx", "type": "Word"}
+      ],
+      "notes": "Review of education fund and upcoming scholarship opportunities for younger generation.",
+      "createdAt": "2025-12-26T12:00:00Z"
     }
   ],
   "summary": {
-    "total": 3,
-    "upcoming": 3,
+    "total": 12,
+    "upcoming": 10,
     "thisWeek": 2,
-    "virtual": 1
+    "thisMonth": 4,
+    "virtual": 7
   }
 }

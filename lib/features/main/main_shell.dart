@@ -24,49 +24,105 @@ class _MainShellScreenState extends ConsumerState<MainShellScreen> {
         DashboardRoute(),
         PlatformRoute(),
         ChatRoute(),
-        ProfileRoute(),
       ],
+      extendBody: true,
       bottomNavigationBuilder: (context, tabsRouter) {
-        return BottomNavigationBar(
-          currentIndex: tabsRouter.activeIndex,
-          onTap: tabsRouter.setActiveIndex,
-          selectedItemColor: theme.colorScheme.primary,
-          unselectedItemColor: theme.colorScheme.mutedForeground,
-          backgroundColor: theme.colorScheme.card,
-          type: BottomNavigationBarType.fixed,
-          items: [
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_outlined),
-              activeIcon: Icon(Icons.dashboard),
-              label: 'Dashboard',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.grid_view_outlined),
-              activeIcon: Icon(Icons.grid_view),
-              label: 'Platform',
-            ),
-            BottomNavigationBarItem(
-              icon: notificationsSummary.when(
-                data: (summary) => summary.unread > 0
-                    ? Badge(
-                        label: Text('${summary.unread}'),
-                        child: const Icon(Icons.chat_bubble_outline),
-                      )
-                    : const Icon(Icons.chat_bubble_outline),
-                loading: () => const Icon(Icons.chat_bubble_outline),
-                error: (_, __) => const Icon(Icons.chat_bubble_outline),
+        return Container(
+          color: Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              height: 64,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.card,
+                borderRadius: BorderRadius.circular(32),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
-              activeIcon: const Icon(Icons.chat_bubble),
-              label: 'Chat',
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _NavItem(
+                    icon: Icons.home_outlined,
+                    activeIcon: Icons.home,
+                    isActive: tabsRouter.activeIndex == 0,
+                    onTap: () => tabsRouter.setActiveIndex(0),
+                    theme: theme,
+                  ),
+                  _NavItem(
+                    icon: Icons.grid_view_outlined,
+                    activeIcon: Icons.grid_view,
+                    isActive: tabsRouter.activeIndex == 1,
+                    onTap: () => tabsRouter.setActiveIndex(1),
+                    theme: theme,
+                  ),
+                  _NavItem(
+                    icon: Icons.chat_bubble_outline,
+                    activeIcon: Icons.chat_bubble,
+                    isActive: tabsRouter.activeIndex == 2,
+                    onTap: () => tabsRouter.setActiveIndex(2),
+                    theme: theme,
+                    badge: notificationsSummary.when(
+                      data: (summary) => summary.unread > 0 ? summary.unread : null,
+                      loading: () => null,
+                      error: (_, __) => null,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Profile',
-            ),
-          ],
+          ),
         );
       },
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final IconData activeIcon;
+  final bool isActive;
+  final VoidCallback onTap;
+  final ShadThemeData theme;
+  final int? badge;
+
+  const _NavItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.isActive,
+    required this.onTap,
+    required this.theme,
+    this.badge,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final iconWidget = Icon(
+      isActive ? activeIcon : icon,
+      color: isActive ? theme.colorScheme.primary : theme.colorScheme.mutedForeground,
+      size: 26,
+    );
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: 56,
+        height: 56,
+        child: Center(
+          child: badge != null
+              ? Badge(
+                  label: Text('$badge'),
+                  child: iconWidget,
+                )
+              : iconWidget,
+        ),
+      ),
     );
   }
 }

@@ -46,65 +46,64 @@ class _ConstitutionContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
     
-    return SingleChildScrollView(
+    return ListView(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  RelunaTheme.accentColor.withValues(alpha: 0.1),
-                  RelunaTheme.info.withValues(alpha: 0.05),
+      children: [
+        // Header
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                RelunaTheme.accentColor.withValues(alpha: 0.1),
+                RelunaTheme.info.withValues(alpha: 0.05),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: theme.colorScheme.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: RelunaTheme.accentColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.description_outlined,
+                      color: RelunaTheme.accentColor,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          constitution.title,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.foreground,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        ShadBadge.secondary(
+                          child: Text('Version ${constitution.version}'),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: theme.colorScheme.border),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: RelunaTheme.accentColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.description_outlined,
-                        color: RelunaTheme.accentColor,
-                        size: 28,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            constitution.title,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.foreground,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          ShadBadge.secondary(
-                            child: Text('Version ${constitution.version}'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              if (constitution.preamble.isNotEmpty) ...[
                 const SizedBox(height: 16),
                 Text(
                   constitution.preamble,
@@ -115,53 +114,85 @@ class _ConstitutionContent extends StatelessWidget {
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.edit_outlined,
-                      size: 14,
-                      color: theme.colorScheme.mutedForeground,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
+              ],
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(
+                    Icons.edit_outlined,
+                    size: 14,
+                    color: theme.colorScheme.mutedForeground,
+                  ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
                       'Last edited by ${constitution.lastEditedBy}',
                       style: TextStyle(
                         fontSize: 12,
                         color: theme.colorScheme.mutedForeground,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          const SizedBox(height: 24),
-          
-          // Sections with Accordion
-          Text(
-            'Sections',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.foreground,
-            ),
+        ),
+        const SizedBox(height: 24),
+        
+        // Sections Title
+        Text(
+          'Sections',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.foreground,
           ),
-          const SizedBox(height: 12),
-          ShadAccordion<int>.multiple(
-            children: constitution.sections.asMap().entries.map((entry) {
-              final index = entry.key;
-              final section = entry.value;
-              return ShadAccordionItem(
-                value: index,
-                title: Row(
+        ),
+        const SizedBox(height: 12),
+        
+        // Sections List (no accordion to avoid scroll conflicts)
+        ...constitution.sections.map((section) => _SectionCard(section: section)),
+      ],
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  final ConstitutionSection section;
+  
+  const _SectionCard({required this.section});
+  
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.card,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.colorScheme.border),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => context.router.push(ConstitutionEditRoute(sectionId: section.id)),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
                     Container(
-                      width: 28,
-                      height: 28,
+                      width: 32,
+                      height: 32,
                       decoration: BoxDecoration(
                         color: RelunaTheme.info.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Center(
                         child: Text(
@@ -185,58 +216,27 @@ class _ConstitutionContent extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      section.content,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: theme.colorScheme.mutedForeground,
-                        height: 1.6,
-                      ),
-                    ),
-                    if (section.articles.isNotEmpty) ...[
-                      const SizedBox(height: 16),
-                      ...section.articles.asMap().entries.map((entry) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.muted,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'Article ${entry.key + 1}: ${entry.value}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: theme.colorScheme.mutedForeground,
-                            ),
-                          ),
-                        ),
-                      )),
-                    ],
-                    const SizedBox(height: 12),
-                    ShadButton.outline(
-                      size: ShadButtonSize.sm,
-                      onPressed: () => context.router.push(ConstitutionEditRoute(sectionId: section.id)),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.edit_outlined, size: 16),
-                          SizedBox(width: 6),
-                          Text('Edit Section'),
-                        ],
-                      ),
+                    Icon(
+                      Icons.chevron_right,
+                      color: theme.colorScheme.mutedForeground,
                     ),
                   ],
                 ),
-              );
-            }).toList(),
+                const SizedBox(height: 12),
+                Text(
+                  section.content,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: theme.colorScheme.mutedForeground,
+                    height: 1.5,
+                  ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }

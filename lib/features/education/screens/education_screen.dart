@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -149,112 +150,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
       ],
       body: Column(
         children: [
-          // Progress Card
-          progress.when(
-            data: (data) => Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    RelunaTheme.info,
-                    RelunaTheme.info.withValues(alpha: 0.8),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Your Progress',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          '${data.completionRate.toStringAsFixed(0)}%',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: LinearProgressIndicator(
-                      value: data.completionRate / 100,
-                      backgroundColor: Colors.white.withValues(alpha: 0.3),
-                      valueColor: const AlwaysStoppedAnimation(Colors.white),
-                      minHeight: 8,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _ProgressStat(
-                        icon: Icons.check_circle,
-                        value: '${data.completedCourses}',
-                        label: 'Completed',
-                      ),
-                      _ProgressStat(
-                        icon: Icons.play_circle,
-                        value: '${data.inProgressCourses}',
-                        label: 'In Progress',
-                      ),
-                      _ProgressStat(
-                        icon: Icons.access_time,
-                        value: '${(data.totalMinutesLearned / 60).toStringAsFixed(1)}h',
-                        label: 'Learned',
-                      ),
-                    ],
-                  ),
-                  if (data.earnedBadges.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 8,
-                      children: data.earnedBadges.map((badge) => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.emoji_events, color: Colors.amber, size: 16),
-                            const SizedBox(width: 4),
-                            Text(badge, style: const TextStyle(
-                              color: Colors.white, fontSize: 12)),
-                          ],
-                        ),
-                      )).toList(),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            loading: () => const SizedBox(height: 150, child: Center(child: CircularProgressIndicator())),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-
+          const SizedBox(height: 16),
           // Category Filter
           SizedBox(
             height: 40,
@@ -315,7 +211,7 @@ class _EducationScreenState extends ConsumerState<EducationScreen> {
                   ),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (e, _) => Center(child: Text('Error: $e')),
             ),
           ),

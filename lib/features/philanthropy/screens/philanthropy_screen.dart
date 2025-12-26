@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
@@ -168,77 +169,7 @@ class _PhilanthropyScreenState extends ConsumerState<PhilanthropyScreen> with Si
       ],
       body: Column(
         children: [
-          // Summary Card
-          summary.when(
-            data: (data) => Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.purple,
-                    Colors.purple.withValues(alpha: 0.8),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Total Donated', style: TextStyle(
-                            color: Colors.white70, fontSize: 14)),
-                          const SizedBox(height: 4),
-                          Text(currencyFormat.format(data.totalDonated),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            )),
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.volunteer_activism, color: Colors.white, size: 28),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _SummaryStat(
-                        value: currencyFormat.format(data.yearlyDonated),
-                        label: 'This Year',
-                      ),
-                      _SummaryStat(
-                        value: '${data.causesSupported}',
-                        label: 'Causes',
-                      ),
-                      _SummaryStat(
-                        value: '${data.activeCampaigns}',
-                        label: 'Active',
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            loading: () => const SizedBox(height: 150, child: Center(child: CircularProgressIndicator())),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-
+          const SizedBox(height: 16),
           // Tabs
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -299,7 +230,7 @@ class _PhilanthropyScreenState extends ConsumerState<PhilanthropyScreen> with Si
                       ],
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () => const Center(child: CupertinoActivityIndicator()),
                   error: (e, _) => Center(child: Text('Error: $e')),
                 ),
 
@@ -325,7 +256,7 @@ class _PhilanthropyScreenState extends ConsumerState<PhilanthropyScreen> with Si
                       itemBuilder: (context, index) => _DonationCard(donation: data[index]),
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () => const Center(child: CupertinoActivityIndicator()),
                   error: (e, _) => Center(child: Text('Error: $e')),
                 ),
               ],

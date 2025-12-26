@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
@@ -185,7 +186,7 @@ class _SuccessionScreenState extends ConsumerState<SuccessionScreen> {
                 ],
               ),
             ),
-            loading: () => const SizedBox(height: 100, child: Center(child: CircularProgressIndicator())),
+            loading: () => const SizedBox(height: 100, child: Center(child: CupertinoActivityIndicator())),
             error: (_, __) => const SizedBox.shrink(),
           ),
 
@@ -246,7 +247,7 @@ class _SuccessionScreenState extends ConsumerState<SuccessionScreen> {
                   ),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CupertinoActivityIndicator()),
               error: (e, _) => Center(child: Text('Error: $e')),
             ),
           ),

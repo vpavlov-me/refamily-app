@@ -40,3 +40,14 @@ flutter:
   assets:
     - assets/mock/
     - assets/images/
+    - assets/fonts/
+
+  fonts:
+    - family: PPObjectSans
+      fonts:
+        - asset: assets/fonts/PPObjectSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/PPObjectSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/PPObjectSans-Bold.ttf
+          weight: 700

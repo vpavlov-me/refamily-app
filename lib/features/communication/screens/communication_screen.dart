@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:intl/intl.dart';
@@ -190,7 +191,7 @@ class _CommunicationScreenState extends ConsumerState<CommunicationScreen> with 
                 ],
               ),
             ),
-            loading: () => const SizedBox(height: 80, child: Center(child: CircularProgressIndicator())),
+            loading: () => const SizedBox(height: 80, child: Center(child: CupertinoActivityIndicator())),
             error: (_, __) => const SizedBox.shrink(),
           ),
 
@@ -265,7 +266,7 @@ class _CommunicationScreenState extends ConsumerState<CommunicationScreen> with 
                       ],
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () => const Center(child: CupertinoActivityIndicator()),
                   error: (e, _) => Center(child: Text('Error: $e')),
                 ),
 
@@ -355,7 +356,7 @@ class _CommunicationScreenState extends ConsumerState<CommunicationScreen> with 
                       ),
                     ],
                   ),
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () => const Center(child: CupertinoActivityIndicator()),
                   error: (e, _) => Center(child: Text('Error: $e')),
                 ),
               ],

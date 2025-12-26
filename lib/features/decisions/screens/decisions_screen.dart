@@ -50,54 +50,6 @@ class _DecisionsScreenState extends ConsumerState<DecisionsScreen> with SingleTi
       ],
       body: Column(
         children: [
-          // Summary
-          decisionsSummary.when(
-            data: (summary) => Padding(
-              padding: const EdgeInsets.all(16),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      theme.colorScheme.primary.withValues(alpha: 0.1),
-                      RelunaTheme.info.withValues(alpha: 0.05),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _SummaryItem(
-                      label: 'Voting',
-                      value: '${summary.voting}',
-                      color: theme.colorScheme.primary,
-                    ),
-                    _SummaryItem(
-                      label: 'Pending',
-                      value: '${summary.pending}',
-                      color: RelunaTheme.warning,
-                    ),
-                    _SummaryItem(
-                      label: 'Approved',
-                      value: '${summary.approved}',
-                      color: RelunaTheme.success,
-                    ),
-                    _SummaryItem(
-                      label: 'Rejected',
-                      value: '${summary.rejected}',
-                      color: RelunaTheme.error,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-
           // Search
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),

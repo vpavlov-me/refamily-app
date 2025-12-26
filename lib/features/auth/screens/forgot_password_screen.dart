@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -123,13 +124,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           enabled: !_isLoading,
           onPressed: _sendResetEmail,
           icon: _isLoading
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
+              ? const CupertinoActivityIndicator(
+                  radius: 8,
+                  color: Colors.white,
                 )
               : null,
         ),

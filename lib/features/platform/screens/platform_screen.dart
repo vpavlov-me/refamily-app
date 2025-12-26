@@ -14,178 +14,173 @@ class PlatformScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = ShadTheme.of(context);
 
-    final features = [
-      _Feature(
-        icon: Icons.gavel_outlined,
-        title: 'Decision Making',
-        route: '/decisions',
-        color: RelunaTheme.accentColor,
-        isImplemented: true,
-      ),
-      _Feature(
-        icon: Icons.event_outlined,
-        title: 'Meetings',
-        route: '/meetings',
-        color: RelunaTheme.info,
-        isImplemented: true,
-      ),
-      _Feature(
-        icon: Icons.people_outlined,
-        title: 'Members',
-        route: '/members',
-        color: RelunaTheme.roleColors['Founder']!,
-        isImplemented: true,
-      ),
-      _Feature(
-        icon: Icons.balance_outlined,
-        title: 'Conflict Resolution',
-        route: '/conflict-resolution',
-        color: RelunaTheme.warning,
-        isImplemented: false,
-      ),
-      _Feature(
-        icon: Icons.description_outlined,
-        title: 'Constitution',
-        route: '/constitution',
-        color: RelunaTheme.success,
-        isImplemented: true,
-      ),
-      _Feature(
-        icon: Icons.forum_outlined,
-        title: 'Communication',
-        route: '/communication',
-        color: RelunaTheme.roleColors['Chair']!,
-        isImplemented: false,
-      ),
-      _Feature(
-        icon: Icons.account_balance_wallet_outlined,
-        title: 'Assets',
-        route: '/assets',
-        color: RelunaTheme.roleColors['CFO']!,
-        isImplemented: false,
-      ),
-      _Feature(
-        icon: Icons.school_outlined,
-        title: 'Education',
-        route: '/education',
-        color: RelunaTheme.roleColors['Advisor']!,
-        isImplemented: false,
-      ),
-      _Feature(
-        icon: Icons.volunteer_activism_outlined,
-        title: 'Philanthropy',
-        route: '/philanthropy',
-        color: RelunaTheme.roleColors['Next-Gen']!,
-        isImplemented: false,
-      ),
-      _Feature(
-        icon: Icons.family_restroom,
-        title: 'Succession',
-        route: '/succession',
-        color: const Color(0xFF6366F1),
-        isImplemented: false,
-      ),
-    ];
-
     return AppScaffold(
-      title: 'Platform',
+      title: '{Family name}',
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Family Governance',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.foreground,
-              ),
+            // Governance Section
+            _SectionHeader(title: 'Governance'),
+            _PlatformCard(
+              icon: LucideIcons.bookOpen,
+              title: 'Constitution',
+              subtitle: 'Shared family values & rules',
+              onTap: () => context.router.push(const ConstitutionRoute()),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Access all family governance tools and features',
-              style: TextStyle(
-                fontSize: 15,
-                color: theme.colorScheme.mutedForeground,
-              ),
+            _PlatformCard(
+              icon: LucideIcons.vote,
+              title: 'Decisions',
+              subtitle: 'Family voting and decision making',
+              onTap: () => context.router.push(const DecisionsRoute()),
             ),
+            _PlatformCard(
+              icon: LucideIcons.users,
+              title: 'Conflicts',
+              subtitle: 'Dispute resolution tools',
+              onTap: () => context.router.push(const ConflictResolutionRoute()),
+            ),
+            _PlatformCard(
+              icon: LucideIcons.calendar,
+              title: 'Family Council',
+              subtitle: 'Schedule, manage and track meetings',
+              onTap: () => context.router.push(const MeetingsRoute()),
+            ),
+            
+            // Development Section
+            _SectionHeader(title: 'Development'),
+            _PlatformCard(
+              icon: LucideIcons.graduationCap,
+              title: 'Education',
+              subtitle: 'Family learning hub',
+              onTap: () => context.router.push(const EducationRoute()),
+            ),
+            
+            // Family affairs Section
+            _SectionHeader(title: 'Family affairs'),
+            _PlatformCard(
+              icon: LucideIcons.gitBranch,
+              title: 'Family',
+              subtitle: 'Organize family records',
+              onTap: () => context.router.push(const MembersRoute()),
+            ),
+            _PlatformCard(
+              icon: LucideIcons.messageSquare,
+              title: 'Communication',
+              subtitle: 'Centralized family messaging',
+              onTap: () => context.router.push(const CommunicationRoute()),
+            ),
+            _PlatformCard(
+              icon: LucideIcons.trendingUp,
+              title: 'Assets',
+              subtitle: 'Track family wealth',
+              onTap: () => context.router.push(const AssetsRoute()),
+            ),
+            
             const SizedBox(height: 24),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.1,
-              ),
-              itemCount: features.length,
-              itemBuilder: (context, index) {
-                final feature = features[index];
-                return FeatureCard(
-                  icon: feature.icon,
-                  title: feature.title,
-                  color: feature.color,
-                  isImplemented: feature.isImplemented,
-                  onTap: () => _navigateToFeature(context, feature.route),
-                );
-              },
-            ),
           ],
         ),
       ),
     );
   }
+}
 
-  void _navigateToFeature(BuildContext context, String route) {
-    switch (route) {
-      case '/decisions':
-        context.router.push(const DecisionsRoute());
-        break;
-      case '/meetings':
-        context.router.push(const MeetingsRoute());
-        break;
-      case '/members':
-        context.router.push(const MembersRoute());
-        break;
-      case '/conflict-resolution':
-        context.router.push(const ConflictResolutionRoute());
-        break;
-      case '/constitution':
-        context.router.push(const ConstitutionRoute());
-        break;
-      case '/communication':
-        context.router.push(const CommunicationRoute());
-        break;
-      case '/assets':
-        context.router.push(const AssetsRoute());
-        break;
-      case '/education':
-        context.router.push(const EducationRoute());
-        break;
-      case '/philanthropy':
-        context.router.push(const PhilanthropyRoute());
-        break;
-      case '/succession':
-        context.router.push(const SuccessionRoute());
-        break;
-    }
+class _SectionHeader extends StatelessWidget {
+  final String title;
+
+  const _SectionHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: RelunaTheme.textPrimary,
+        ),
+      ),
+    );
   }
 }
 
-class _Feature {
+class _PlatformCard extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String route;
-  final Color color;
-  final bool isImplemented;
+  final String subtitle;
+  final VoidCallback? onTap;
 
-  const _Feature({
+  const _PlatformCard({
     required this.icon,
     required this.title,
-    required this.route,
-    required this.color,
-    required this.isImplemented,
+    required this.subtitle,
+    this.onTap,
   });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
+      child: ShadCard(
+        padding: const EdgeInsets.all(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Row(
+            children: [
+              // Icon container
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.muted,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(
+                  icon,
+                  size: 20,
+                  color: RelunaTheme.accentColor,
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Text content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: RelunaTheme.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.colorScheme.mutedForeground,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Arrow icon
+              Icon(
+                LucideIcons.chevronRight,
+                size: 20,
+                color: theme.colorScheme.mutedForeground,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

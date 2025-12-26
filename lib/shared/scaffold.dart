@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// App Scaffold with consistent layout
@@ -63,7 +64,7 @@ class AppScaffold extends StatelessWidget {
   }
 }
 
-/// Loading Indicator
+/// Loading Indicator (iOS style)
 class AppLoadingIndicator extends StatelessWidget {
   final double size;
   final Color? color;
@@ -76,16 +77,9 @@ class AppLoadingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CircularProgressIndicator(
-        strokeWidth: 2,
-        valueColor: AlwaysStoppedAnimation<Color>(
-          color ?? theme.colorScheme.primary,
-        ),
-      ),
+    return CupertinoActivityIndicator(
+      radius: size / 2,
+      color: color,
     );
   }
 }

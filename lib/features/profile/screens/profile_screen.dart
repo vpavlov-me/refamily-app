@@ -13,134 +13,218 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = ShadTheme.of(context);
     final authState = ref.watch(authStateProvider);
     final user = authState.currentUser;
 
     return AppScaffold(
       title: 'Profile',
       actions: [
-        IconButton(
-          icon: const Icon(Icons.edit_outlined),
-          onPressed: () => _showEditProfileDialog(context, ref),
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: RelunaTheme.border,
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF0D0084).withValues(alpha: 0.06),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: const Icon(LucideIcons.pencil, size: 20),
+            color: RelunaTheme.textPrimary,
+            onPressed: () => _showEditProfileDialog(context, ref),
+          ),
         ),
+        const SizedBox(width: 16),
       ],
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Profile header
-            _ProfileHeader(user: user),
-            
-            const SizedBox(height: 24),
-            
-            // Profile info cards
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+      body: Column(
+        children: [
+          // Profile Header Section
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                // Avatar
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: RelunaTheme.border,
+                      width: 2,
+                    ),
+                  ),
+                  child: ClipOval(
+                    child: user?.avatar != null
+                        ? Image.network(user!.avatar!, fit: BoxFit.cover)
+                        : Container(
+                            color: RelunaTheme.background,
+                            child: Center(
+                              child: Text(
+                                user?.name?.substring(0, 1).toUpperCase() ?? 'U',
+                                style: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w600,
+                                  color: RelunaTheme.accentColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Name
+                Text(
+                  user != null ? '${user.name} ${user.surname}' : 'Logan Roy',
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                    color: RelunaTheme.textPrimary,
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                // Email
+                Text(
+                  user?.email ?? 'v.pavlov@reluna.com',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: RelunaTheme.textSecondary,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Log out button
+                GestureDetector(
+                  onTap: () => _confirmLogout(context, ref),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: RelunaTheme.border,
+                        width: 1,
+                      ),
+                    ),
+                    child: const Text(
+                      'Log out',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFFCC0505),
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Content Section
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  _ProfileInfoCard(
-                    title: 'Personal Information',
-                    items: [
-                      _ProfileInfoItem(
-                        icon: Icons.person_outline,
-                        label: 'Full Name',
-                        value: user != null ? '${user.name} ${user.surname}' : 'Not set',
-                      ),
-                      _ProfileInfoItem(
-                        icon: Icons.email_outlined,
-                        label: 'Email',
-                        value: user?.email ?? 'Not set',
-                      ),
-                      _ProfileInfoItem(
-                        icon: Icons.phone_outlined,
-                        label: 'Phone',
-                        value: user?.phone ?? 'Not set',
-                      ),
-                    ],
+                  // Profile Card
+                  _MenuCard(
+                    icon: LucideIcons.user,
+                    title: 'Profile',
+                    subtitle: 'View and edit you profile',
+                    onTap: () => _showEditProfileDialog(context, ref),
                   ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  _ProfileInfoCard(
-                    title: 'Family Information',
-                    items: [
-                      _ProfileInfoItem(
-                        icon: Icons.family_restroom,
-                        label: 'Family',
-                        value: user?.familyName ?? 'Not set',
-                      ),
-                      _ProfileInfoItem(
-                        icon: Icons.badge_outlined,
-                        label: 'Role',
-                        value: user?.role ?? 'Member',
-                        valueColor: RelunaTheme.getRoleColor(user?.role ?? 'Member'),
-                      ),
-                      _ProfileInfoItem(
-                        icon: Icons.calendar_today_outlined,
-                        label: 'Member Since',
-                        value: user?.joinedAt != null 
-                            ? '${user!.joinedAt!.day}/${user.joinedAt!.month}/${user.joinedAt!.year}'
-                            : 'N/A',
-                      ),
-                    ],
+                  const SizedBox(height: 8),
+                  // App preferences Card
+                  _MenuCard(
+                    icon: LucideIcons.settings,
+                    title: 'App preferences',
+                    subtitle: 'Setting, Themes and other',
+                    onTap: () => context.router.push(const SettingsRoute()),
                   ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Quick actions
-                  _QuickActionsCard(
-                    actions: [
-                      _QuickAction(
-                        icon: Icons.settings_outlined,
-                        label: 'Settings',
-                        onTap: () => context.router.push(const SettingsRoute()),
-                      ),
-                      _QuickAction(
-                        icon: Icons.notifications_outlined,
-                        label: 'Notifications',
-                        onTap: () => context.router.push(const NotificationsRoute()),
-                      ),
-                      _QuickAction(
-                        icon: Icons.security_outlined,
-                        label: 'Security',
-                        onTap: () => _showSecurityOptions(context, ref),
-                      ),
-                      _QuickAction(
-                        icon: Icons.help_outline,
-                        label: 'Help',
-                        onTap: () => _showHelpDialog(context),
-                      ),
-                    ],
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Logout button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ShadButton.outline(
-                      onPressed: () => _confirmLogout(context, ref),
-                      child: const Text('Sign Out'),
+
+                  const Spacer(),
+
+                  // Footer
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        // Reluna Logo
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: const BoxDecoration(
+                            color: RelunaTheme.accentColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'R',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        // Version info
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Version 1.0.1',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: RelunaTheme.textSecondary,
+                                height: 1.4,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Build 13',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: RelunaTheme.textSecondary,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        // Copyright
+                        const Text(
+                          '2025©️ Reluna Family',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: RelunaTheme.textSecondary,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  
-                  const SizedBox(height: 32),
-                  
-                  // App version
-                  Text(
-                    'Reluna Family v1.0.0',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: theme.colorScheme.mutedForeground,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 16),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -153,48 +237,6 @@ class ProfileScreen extends ConsumerWidget {
         backgroundColor: theme.colorScheme.card,
         title: const Text('Edit Profile'),
         content: const Text('Profile editing will be available in a future update.'),
-        actions: [
-          ShadButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showSecurityOptions(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: const Icon(Icons.pin_outlined),
-            title: const Text('Change PIN'),
-            onTap: () {
-              Navigator.pop(context);
-              context.router.push(const PinSetupRoute());
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.fingerprint),
-            title: const Text('Enable Biometric'),
-            onTap: () => Navigator.pop(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showHelpDialog(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: theme.colorScheme.card,
-        title: const Text('Help & Support'),
-        content: const Text('For assistance, please contact support@reluna.com'),
         actions: [
           ShadButton(
             onPressed: () => Navigator.pop(context),
@@ -232,217 +274,82 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-class _ProfileHeader extends StatelessWidget {
-  final dynamic user;
-
-  const _ProfileHeader({this.user});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary.withValues(alpha: 0.1),
-            theme.colorScheme.primary.withValues(alpha: 0.05),
-          ],
-        ),
-      ),
-      child: Column(
-        children: [
-          ShadAvatar(
-            user?.avatar ?? 'placeholder',
-            size: const Size(100, 100),
-            placeholder: Text(
-              user?.name?.substring(0, 1).toUpperCase() ?? 'U',
-              style: TextStyle(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            user != null ? '${user.name} ${user.surname}' : 'User',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.foreground,
-            ),
-          ),
-          const SizedBox(height: 4),
-          if (user?.role != null)
-            RoleBadge(role: user!.role),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileInfoCard extends StatelessWidget {
+class _MenuCard extends StatelessWidget {
+  final IconData icon;
   final String title;
-  final List<_ProfileInfoItem> items;
-
-  const _ProfileInfoCard({
-    required this.title,
-    required this.items,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.foreground,
-              ),
-            ),
-          ),
-          Divider(height: 1, color: theme.colorScheme.border),
-          ...items,
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileInfoItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color? valueColor;
-
-  const _ProfileInfoItem({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.valueColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: theme.colorScheme.mutedForeground),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: theme.colorScheme.mutedForeground,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: valueColor ?? theme.colorScheme.foreground,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _QuickActionsCard extends StatelessWidget {
-  final List<_QuickAction> actions;
-
-  const _QuickActionsCard({required this.actions});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.border),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: actions,
-        ),
-      ),
-    );
-  }
-}
-
-class _QuickAction extends StatelessWidget {
-  final IconData icon;
-  final String label;
+  final String subtitle;
   final VoidCallback onTap;
 
-  const _QuickAction({
+  const _MenuCard({
     required this.icon,
-    required this.label,
+    required this.title,
+    required this.subtitle,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
-    
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: RelunaTheme.border,
+            width: 1,
+          ),
+        ),
+        child: Row(
           children: [
+            // Icon container
             Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+              width: 44,
+              height: 44,
+              decoration: const BoxDecoration(
+                color: RelunaTheme.background,
+                shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: theme.colorScheme.primary),
+              child: Icon(
+                icon,
+                size: 20,
+                color: RelunaTheme.accentColor,
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: theme.colorScheme.foreground,
+            const SizedBox(width: 16),
+            // Text content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: RelunaTheme.textPrimary,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: RelunaTheme.textSecondary,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
               ),
+            ),
+            // Arrow icon
+            const Icon(
+              LucideIcons.chevronRight,
+              size: 20,
+              color: RelunaTheme.textPrimary,
             ),
           ],
         ),

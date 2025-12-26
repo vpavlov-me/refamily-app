@@ -75,49 +75,6 @@ class _MembersScreenState extends ConsumerState<MembersScreen> {
             ),
           ),
 
-          // Summary
-          membersSummary.when(
-            data: (summary) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: RelunaTheme.accentColor.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _SummaryItem(
-                      label: 'Total',
-                      value: '${summary.totalMembers}',
-                    ),
-                    Container(
-                      width: 1,
-                      height: 30,
-                      color: RelunaTheme.divider,
-                    ),
-                    _SummaryItem(
-                      label: 'Active',
-                      value: '${summary.activeMembers}',
-                    ),
-                    Container(
-                      width: 1,
-                      height: 30,
-                      color: RelunaTheme.divider,
-                    ),
-                    _SummaryItem(
-                      label: 'Generations',
-                      value: '${summary.generations}',
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
-          ),
-
           const SizedBox(height: 16),
 
           // Members list
